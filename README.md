@@ -5,8 +5,8 @@
 	 Van két különböző nyelv, ami lehetne fejleszteni a szókincsét (Magyar, Angol). 
 	 Többféle egyiptomi írásjelekkel lesznek a mezőn, és egyedi dobókockával lehet léptetni az adott mezőre a játékosok[bábuk]. 
 	 A játék lényege, hogy az adott mezőn van a játékos, azt alapján kap kártyát, és ki kell találni/kiegészíteni a szót [ha sikerül], akkor átad másik játékosnak[ellefélnek] a bombát, mindaddig fel nem robban az időzített bomba. 
-	 Ha egyik játékosnál felrobbant arra nem jár pont, és akik túlélték, azok megkapják a pontot. Ezáltal lehet fejlődni, és gyűjteni pontokat. Itt nincs se győztes, se vesztes a játék végén. 
-	 Pontot lehet kiváltani valamiféle fejlesztéseken (<- Ideiglenes terv) .*  
+	 Ha egyik játékosnál felrobbant, akkor arra nem jár pont, és akik túlélték, azok megkapják a pontot. Ezáltal lehet fejlődni, és gyűjteni pontokat. Itt nincs se győztes, se vesztes a játék végén. 
+	 Pontokat lehet kiváltani valamiféle fejlesztéseken (<- Ideiglenes terv) .*  
  
  2. ## Jelenlegi verzió
 	Kliens - v0.03
