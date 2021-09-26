@@ -1,0 +1,42 @@
+.button {
+-fx-background-color: transparent;
+-fx-text-fill: white;
+  }
+  .button:hover {
+     -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+     -fx-text-fill: -fx-text-base-color;
+
+  }
+
+.windows_size .menu-item:focused
+{
+    -fx-background-color: orange;
+    -fx-text-fill: white;
+}
+
+.windows_size .context-menu {
+    -fx-background-color: grey;
+    -fx-opacity: 0.8;
+
+}
+
+.windows_size
+{
+    -fx-background-color: grey;
+    -fx-font-size: 15px;
+    -fx-border-radius: 50px;
+
+}
+
+.windows_size .label
+{
+    -fx-text-fill: white;
+}
+
+.gamelobby_pane
+{
+   -fx-background-image: url('background2.png');
+   -fx-background-position: center;
+   -fx-background-size: cover;
+   -fx-background-repeat: no-repeat;
+}
