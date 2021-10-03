@@ -1,5 +1,6 @@
 package ns_srv.ns_server;
 
+import Server.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -11,19 +12,24 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
-import java.util.List;
 
-public class Server extends Application {
+public class Server extends Application implements ServerInterface {
 
     private Scene scene;
 
     private final static int port = 6666;
 
+
+    private String name;
+
     private ServerSocket srvsock;
     private Socket socket;
 
-    private final ArrayList<Socket> clients = new ArrayList<>();
-    private final List<Clients_Lobby> clientslist = new ArrayList<Clients_Lobby>();
+    private ArrayList<User> players;
+    private ArrayList<ObjectOutputStream> writers;
+
+    private ServerListen serverListen;
+
 
     private boolean isClosed = false;
 
@@ -48,145 +54,208 @@ public class Server extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
-
     }
 
     @FXML
-    protected void button_on() throws IOException {
-
-        srvsock = new ServerSocket(port);
-        System.out.println("A szerver elindult 6666-os porttal!");
-        status_label.setText("On");
-        new Thread(() ->
+    protected void button_on() {
+        try
         {
-            while (!isClosed())
+        this.players = new ArrayList<User>();
+        this.writers = new ArrayList<ObjectOutputStream>();
+
+        this.serverListen = new ServerListen(port);
+        this.serverListen.start();
+
+        }catch(IOException IOE)
+        {
+            if(IOE.getMessage().contains("Address already in use"))
             {
-            socket = null;
-            try {
-                socket = this.srvsock.accept();
-                System.out.println("Kliens csatlakozott a szerverre: " + socket.getRemoteSocketAddress());
-
-                Clients_Lobby cl = new Clients_Lobby(socket, this);
-                clients.add(this.socket);
-                clientslist.add(cl);
-
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        clients_size.setText(String.valueOf(clients.size()));
-                    }
-                });
-
-                Thread t2 = new Thread(cl);
-                t2.start();
-
-            } catch (IOException IOE)
-                {
-                if (isClosed())
-                    {
-                        System.out.println("A szerver leállt!");
-                        break;
-                    }
-                }
-             }
-        }).start();
-
+                System.out.println("Már használatban van a port!");
+            }
+        }
         }
 
-
-    public void broadcast(String msg)
+    private class ServerListen extends Thread
     {
-        System.out.println(msg);
-        for(Clients_Lobby cl : this.clientslist)
-        {
-            cl.Send_MSG_Client(msg);
-        }
-    }
+        private ServerSocket srvsock;
 
-    class Clients extends Thread
-    {
-        final Socket s;
-        final DataInputStream fromClient;
-        final DataOutputStream toClient;
-
-        Clients(Socket s,DataOutputStream p,DataInputStream b)
+        public ServerListen(int port) throws IOException
         {
-            this.s = s;
-            this.toClient = p;
-            this.fromClient = b;
-            clients.add(s);
-            System.out.println(s);
+            this.srvsock = new ServerSocket(port);
+            System.out.println("A szerver elindult...");
+            status_label.setText("On");
         }
 
         @Override
         public void run()
         {
-            String fromclient_msg;
-            while(true)
-            {
-                try
-                {
-                    if(this.s.isConnected()) {
-                        fromclient_msg = fromClient.readUTF();
-                        System.out.println(fromclient_msg);
-                        if (fromclient_msg.equals("Closed_client")) {
-                            System.out.println("A kliens " + this.s + "kilépett");
-                            clients.remove(this.s);
-
-                            Platform.runLater(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    clients_size.setText(String.valueOf(clients.size()));
-                                }
-                            });
-
-                            toClient.writeUTF("Rendben!");
-
-                            this.s.close();
-                            this.toClient.close();
-                            this.fromClient.close();
-
-                            break;
-                        }
-                    }
-                }
-                catch(IOException IOE)
-                {
-                    //IOE.printStackTrace();
-                }
-            }
             try
             {
-                this.toClient.close();
-                this.fromClient.close();
-            }
-            catch(IOException IOE)
+                while(true)
+                {
+                    new ClientHandler(this.srvsock.accept()).start();
+                }
+
+            }catch(SocketException SE)
+            {
+                System.out.println(this.getId()+": " +SE.getMessage());
+            }catch(IOException IOE)
             {
                 IOE.printStackTrace();
+            }finally {
+                try{
+                    this.srvsock.close();
+                }catch(IOException IOE)
+                {
+                    ;
+                }
             }
         }
 
+        public void Close() throws IOException {
+            this.srvsock.close();
+        }
+    }
+
+    private class ClientHandler extends Thread
+    {
+        private Socket socket;
+
+        private InputStream in;
+        private ObjectInputStream oin;
+        private OutputStream out;
+        private ObjectOutputStream oout;
+
+        public ClientHandler(Socket socket)
+        {
+            System.out.println("Jelenleg valaki csatlakozott!");
+            this.socket = socket;
+        }
+
+        @Override
+        public void run()
+        {
+            try
+            {
+                this.in = this.socket.getInputStream();
+                this.oin = new ObjectInputStream(this.in);
+
+                this.out = this.socket.getOutputStream();
+                this.oout = new ObjectOutputStream(this.out);
+
+                while(this.socket.isConnected())
+                {
+                    MainData incomingmsg = (MainData) this.oin.readObject();
+                    if(incomingmsg != null)
+                    {
+                        System.out.println(incomingmsg.getName() +": " +incomingmsg.getDataType());
+                        switch(incomingmsg.getDataType())
+                        {
+                            case CONNECT:
+                            {
+                                MainData msgreply = new MainData();
+                                User p = new User(incomingmsg.getName(),this.socket.getInetAddress());
+                                players.add(p);
+                                writers.add(this.oout);
+
+                                msgreply.setDataType(DataType.CONNECT_SUCCESS);
+                                msgreply.setName(incomingmsg.getName());
+
+                                this.oout.writeObject(msgreply);
+                                Platform.runLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        clients_size.setText(String.valueOf(players.size()));
+                                    }
+                                });
+                                System.out.println("Játékos száma: [" + players.size()+"]");
+                                break;
+                            }
+                            case LOBBY_CHAT:
+                            {
+                                System.out.println(incomingmsg.getName() + ": " + incomingmsg.getContent());
+                                broadcastmsg(incomingmsg);
+                                break;
+                            }
+                            case DISCONNECT:
+                            {
+                                broadcastmsg(incomingmsg);
+
+                                for(int i=0; i < players.size(); ++i)
+                                {
+                                    if(players.get(i).getname().equals(incomingmsg.getName()))
+                                    {
+                                        System.out.println("Egy játékos lelépett!\nElőtte: " + players.size());
+                                        players.remove(i);
+                                        writers.remove(i);
+                                        Platform.runLater(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                clients_size.setText(String.valueOf(players.size()));
+                                            }
+                                        });
+                                        System.out.println("Utána: " + players.size());
+                                        break;
+                                    }
+                                }
+                                socket.close();
+                                break;
+                            }
+
+                            case PING:
+                            {
+                                break;
+                            }
+                            default:
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }catch(SocketException SE)
+            {
+                System.out.println("1." + SE.getMessage());
+            }catch(IOException IOE)
+            {
+                System.out.println("2." + IOE.getMessage());
+            }catch(ClassNotFoundException CNFE)
+            {
+                CNFE.printStackTrace();
+            }
+        }
+
+
+    }
+
+    public void broadcastmsg(MainData data)
+    {
+        for(int i=0; i < this.players.size();++i)
+        {
+            if(!data.getName().equals(this.players.get(i).getname()))
+            {
+                System.out.println(i + ": " + this.players.get(i).getname());
+                try
+                {
+                    this.writers.get(i).writeObject(data);
+                }catch(IOException IOE)
+                {
+                    ;
+                }
+            }
+        }
     }
 
     @FXML
     protected void button_off() throws IOException
     {
+        serverListen.Close();
         this.isClosed = true;
-        srvsock.close();
         status_label.setText("Off");
-
-        for(Socket socket : clients)
-        {
-            socket.close();
-        }
-
-        clientslist.clear();
-        clients.clear();
+        players.clear();
 
         System.out.println("Sikeresen lekapcsolódott az összes kliens!");
-        clients_size.setText(String.valueOf(clients.size()));
+        clients_size.setText(String.valueOf(players.size()));
     }
 
     public static void main(String[] args) {

@@ -7,4 +7,6 @@ module ns_srv.ns_server {
 
     opens ns_srv.ns_server to javafx.fxml;
     exports ns_srv.ns_server;
+    exports Server;
+    opens Server to javafx.fxml;
 }
