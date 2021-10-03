@@ -1,20 +1,22 @@
 package com.ns_deik.ns_client.gameroom.room_join;
 
+import com.ns_deik.ns_client.Main;
 import com.ns_deik.ns_client.gameroom.Data;
-import com.ns_deik.ns_client.gameroom.DataType;
 import com.ns_deik.ns_client.gameroom.User;
+import com.ns_deik.ns_client.lobby.GameLobbyController;
+import com.ns_deik.ns_client.mainServer.MainServer;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -22,7 +24,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +32,10 @@ import java.util.ResourceBundle;
 public class GameRoomJoinController implements Initializable {
 
     private Stage stage;
-    private Scene scene;
-    private Socket socket;
     private String name;
     private String state;
     GameRoomJoin client;
+    MainServer server;
     String room;
 
     @FXML
@@ -48,6 +48,8 @@ public class GameRoomJoinController implements Initializable {
     VBox JoinedRoom;
     @FXML
     VBox JoinRoom;
+    @FXML
+    Button return_lobby;
 
     @FXML
     private ListView<HBox> ListViewPlayersC;
@@ -56,9 +58,9 @@ public class GameRoomJoinController implements Initializable {
 
     private int connectedPlayers;
 
-    public GameRoomJoinController(Socket socket, String name, Stage stage, String state)
+    public GameRoomJoinController(MainServer server, String name, Stage stage, String state)
     {
-        this.socket = socket;
+        this.server = server;
         this.name = name;
         this.stage = stage;
         this.state = state;
@@ -98,6 +100,29 @@ public class GameRoomJoinController implements Initializable {
                 }
             }
         });
+
+        return_lobby.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                try{
+
+                    Stage stage = (Stage)((Node)mouseEvent.getSource()).getScene().getWindow();
+                    FXMLLoader GameLobbyFXML = new FXMLLoader(Main.class.getResource("gamelobby.fxml"));
+                    GameLobbyController gamelobby = new GameLobbyController(name,stage, server);
+                    GameLobbyFXML.setController(gamelobby);
+                    Scene scene = new Scene(GameLobbyFXML.load(),1024,768);
+
+                    stage.setScene(scene);
+                    stage.setTitle("[NS-DEIK] Játék - Lobby");
+                    stage.show();
+                }catch (IOException IOE)
+                {
+                    ;
+                }
+
+            }
+        });
+
     }
 
     public void joinroom()
@@ -107,11 +132,17 @@ public class GameRoomJoinController implements Initializable {
 
     public void room_client() throws IOException
     {
-        stage.setTitle("[NS-DEIK] Játék - [" + room + "]");
-        stage.centerOnScreen();
-        stage.setResizable(false);
-        stage.show();
-        players_gui();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                stage.setTitle("[NS-DEIK] Játék - [" + room + "]");
+                stage.centerOnScreen();
+                stage.setResizable(false);
+                stage.show();
+                players_gui();
+            }
+        });
+
     }
 
     public void players_gui()
@@ -212,7 +243,36 @@ public class GameRoomJoinController implements Initializable {
     }
     public void CloseConnection()
     {
-        this.client.Close();
+        if(this.client != null)
+        {
+            this.client.Close();
+        }
+
+    }
+
+    public void connect_failed()
+    {
+        try
+        {
+            FXMLLoader GameLobbyFXML = new FXMLLoader(Main.class.getResource("gamelobby.fxml"));
+            GameLobbyController gamelobby = new GameLobbyController(name,stage, server);
+            GameLobbyFXML.setController(gamelobby);
+            Scene scene = new Scene(GameLobbyFXML.load(),1024,768);
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    stage.setScene(scene);
+                    stage.setTitle("[NS-DEIK] Játék - Lobby");
+                    stage.show();
+                    gamelobby.lobby_input_text("[HIBA] Sikertelen szoba csatlakozása!");
+                }
+            });
+
+        }catch(IOException IOE)
+        {
+            ;
+        }
+
     }
 
 }

@@ -24,4 +24,6 @@ module com.ns_deik.ns_client {
     opens com.ns_deik.ns_client.mainServer to javafx.fxml;
     exports com.ns_deik.ns_client.lobby;
     opens com.ns_deik.ns_client.lobby to javafx.fxml;
+    exports Server;
+    opens Server to javafx.fxml;
 }

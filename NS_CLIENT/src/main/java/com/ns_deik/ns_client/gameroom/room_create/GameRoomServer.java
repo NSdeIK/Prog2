@@ -1,6 +1,5 @@
 package com.ns_deik.ns_client.gameroom.room_create;
 
-
 import com.ns_deik.ns_client.gameroom.Data;
 import com.ns_deik.ns_client.gameroom.DataType;
 import com.ns_deik.ns_client.gameroom.User;
@@ -33,9 +32,9 @@ public class GameRoomServer implements GRSInterface {
         this.roomcode = room;
 
         this.players = new ArrayList<User>();
-        User player = new User(name);
-        player.set_ready(true);
-        this.players.add(player);
+        User p = new User(name);
+        p.set_ready(true);
+        this.players.add(p);
 
         this.writers = new ArrayList<ObjectOutputStream>();
         this.writers.add(null);
@@ -88,6 +87,17 @@ public class GameRoomServer implements GRSInterface {
             }
         }
 
+        public void CloseServer()
+        {
+            try
+            {
+                this.srvsock.close();
+            }catch(IOException IOE)
+            {
+                ;
+            }
+        }
+
     }
 
     private class ClientHandler extends Thread
@@ -113,7 +123,7 @@ public class GameRoomServer implements GRSInterface {
                 this.in = this.socket.getInputStream();
                 this.oin = new ObjectInputStream(this.in);
                 this.out = this.socket.getOutputStream();
-                this.oout = new ObjectOutputStream(out);
+                this.oout = new ObjectOutputStream(this.out);
                 while(this.socket.isConnected())
                 {
                     Data incomingmsg = (Data) this.oin.readObject();
@@ -123,6 +133,7 @@ public class GameRoomServer implements GRSInterface {
                         {
                             case CONNECT:
                             {
+                                System.out.println("Előtte: "+players.size());
                                 Data msgreply = new Data();
                                 User p = new User(incomingmsg.getName(), this.socket.getInetAddress());
                                 players.add(p);
@@ -140,6 +151,7 @@ public class GameRoomServer implements GRSInterface {
                                 controller.room_input("Szerver: [" +incomingmsg.getName() + "] játékos csatlakozott a szobához!");
 
                                 this.oout.writeObject(msgreply);
+                                System.out.println("Utána: "+players.size());
                                 break;
                             }
                             case DISCONNECT:
@@ -157,7 +169,6 @@ public class GameRoomServer implements GRSInterface {
                                         break;
                                     }
                                 }
-
                                 socket.close();
                                 break;
                             }
@@ -195,14 +206,14 @@ public class GameRoomServer implements GRSInterface {
 
     private void sendMSG(Data data)
     {
-        for(int i = 1; i < this.players.size(); ++i)
+        for(int i = 1; i < this.players.size(); i++)
         {
             try
             {
                 this.writers.get(i).writeObject(data);
             }catch (IOException IOE)
             {
-                ;
+                IOE.printStackTrace();
             }
         }
     }
@@ -222,7 +233,18 @@ public class GameRoomServer implements GRSInterface {
 
     public void Close()
     {
-        ;
+        Data data = new Data(DataType.DISCONNECT, name, "Szerver szoba bezárult.");
+        for(int i=1; i < this.players.size(); i++)
+        {
+            data.setName(this.players.get(i).getname());
+            try{
+                this.writers.get(i).writeObject(data);
+            }catch(IOException e)
+            {
+                ;
+            }
+        }
+        this.serverlisten.CloseServer();
     }
 
     private void broadcastmsg(Data data)

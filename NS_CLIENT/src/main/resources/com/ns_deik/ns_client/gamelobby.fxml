@@ -50,7 +50,7 @@
                            <font>
                               <Font name="Script MT Bold" size="24.0" />
                            </font></Button>
-                        <Button mnemonicParsing="false" text="Kilépés">
+                        <Button fx:id="exit_button" mnemonicParsing="false" text="Kilépés">
                            <font>
                               <Font name="Script MT Bold" size="24.0" />
                            </font></Button>

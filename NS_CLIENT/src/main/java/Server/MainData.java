@@ -1,30 +1,34 @@
-package com.ns_deik.ns_client.gameroom;
-
+package Server;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 
-public class Data implements Serializable
-{
+public class MainData implements Serializable {
+
     private static final long serialVersionUID = 1L;
     private DataType dataType;
     private String name;
+    private String room;
     private String content;
+    private InetAddress ip;
 
-    public Data()
-    {}
 
-    public Data(String type, String name, String content)
+    public MainData()
+    {
+    }
+
+    public MainData(String type, String name, String content)
     {
         this.dataType = DataType.valueOf(type);
         this.name = name;
         this.content = content;
     }
 
-    public Data(DataType type, String name, String content)
+    public MainData(DataType type, String name, String content)
     {
-            this.dataType = type;
-            this.name = name;
-            this.content = content;
+        this.dataType = type;
+        this.name = name;
+        this.content = content;
     }
 
     public DataType getDataType()
@@ -47,6 +51,16 @@ public class Data implements Serializable
         this.name = name;
     }
 
+    public String getRoom()
+    {
+        return room;
+    }
+
+    public void setRoom(String content)
+    {
+        this.room = room;
+    }
+
     public String getContent()
     {
         return content;
@@ -57,9 +71,15 @@ public class Data implements Serializable
         this.content = content;
     }
 
-    public String CheckConsole()
+    public InetAddress getIP()
     {
-        return this.name + "( " + this.dataType.toString() + " ):" + this.content;
+        return ip;
     }
+
+    public void setIP(InetAddress ip)
+    {
+        this.ip = ip;
+    }
+
 
 }

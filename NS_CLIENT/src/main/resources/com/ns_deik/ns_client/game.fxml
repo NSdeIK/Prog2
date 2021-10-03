@@ -1,42 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<StackPane fx:id="stackPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-image: url('background2.png'); -fx-background-position: center; -fx-background-size: cover; -fx-background-repeat: no-repeat;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <GridPane alignment="TOP_CENTER">
-        <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
+      <TextField fx:id="username_input" alignment="CENTER" layoutX="312.0" layoutY="359.0" prefHeight="50.0" prefWidth="400.0" promptText="Játékos neved">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </TextField>
+      <Text layoutX="422.0" layoutY="338.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Játékos neved">
+         <font>
+            <Font size="29.0" />
+         </font>
+      </Text>
+      <HBox fx:id="server_on" layoutX="824.0" layoutY="8.0" prefHeight="100.0" prefWidth="200.0" visible="false">
          <children>
-            <TextField id="username_input" fx:id="username_input" alignment="BASELINE_CENTER"  promptText="Neved" stylesheets="@../../../client.css" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Szerver">
                <font>
-                  <Font name="Script MT Bold" size="24.0" />
+                  <Font size="30.0" />
                </font>
-            </TextField>
-            <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" fx:id="hbox">
-               <children>
-                  <Label text="Szerver státusz:" textFill="WHITE">
-                     <font>
-                        <Font name="Script MT Bold" size="15.0" />
-                     </font>
-                  </Label>
-               </children></HBox>
+            </Text>
+            <ImageView fitHeight="30.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../green_circle.png" />
+               </image>
+               <HBox.margin>
+                  <Insets left="5.0" top="7.0" />
+               </HBox.margin>
+            </ImageView>
          </children>
-      </GridPane>
+      </HBox>
+      <HBox fx:id="server_off" layoutX="824.0" layoutY="8.0" prefHeight="110.0" prefWidth="200.0" visible="false">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Szerver">
+               <font>
+                  <Font size="30.0" />
+               </font>
+            </Text>
+            <ImageView fitHeight="30.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../red_circle.png" />
+               </image>
+               <HBox.margin>
+                  <Insets left="5.0" top="7.0" />
+               </HBox.margin>
+            </ImageView>
+         </children>
+      </HBox>
    </children>
-</StackPane>
+</AnchorPane>

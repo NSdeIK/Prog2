@@ -75,10 +75,12 @@ public class HomepageController
 
         FXMLLoader GameFXML = new FXMLLoader(Main.class.getResource("game.fxml"));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        GameController gameController = new GameController(width,height,stage);
+        //GameController gameController = new GameController(width,height,stage);
+        GameController gameController = new GameController();
         GameFXML.setController(gameController);
 
-        Scene scene = new Scene(GameFXML.load(),width,height);
+        //Scene scene = new Scene(GameFXML.load(),width,height);  //Soon...
+        Scene scene = new Scene(GameFXML.load(),1024,768);
 
         stage.setScene(scene);
         stage.setTitle("[NS-DEIK] Játék");

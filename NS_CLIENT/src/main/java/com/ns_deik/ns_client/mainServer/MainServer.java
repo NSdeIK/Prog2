@@ -1,18 +1,20 @@
-package com.ns_deik.ns_client.gameroom.room_join;
+package com.ns_deik.ns_client.mainServer;
 
+import Server.*;
 import com.ns_deik.ns_client.gameroom.Data;
-import com.ns_deik.ns_client.gameroom.DataType;
 import com.ns_deik.ns_client.gameroom.User;
+import com.ns_deik.ns_client.lobby.GameLobbyController;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.List;
 
-public class GameRoomJoin implements GRJInterface
-{
-    private GameRoomJoinController controller;
+public class MainServer implements SInterface {
+
+    private boolean network = false;
+    private GameLobbyController controller;
     private ClientListen clientlisten;
+    private ArrayList<User> players;
 
     private String name;
 
@@ -21,13 +23,15 @@ public class GameRoomJoin implements GRJInterface
     private OutputStream out;
     private ObjectOutputStream oout;
 
-    public GameRoomJoin(GameRoomJoinController controller, String room, String name)
+    public MainServer(GameLobbyController controller,String name)
     {
         this.controller = controller;
         this.name = name;
-        this.clientlisten = new ClientListen("localhost",6667);
+        this.clientlisten = new ClientListen("192.168.1.114",6666);
         this.clientlisten.start();
     }
+
+    public MainServer(){};
 
     private class ClientListen extends Thread
     {
@@ -46,7 +50,7 @@ public class GameRoomJoin implements GRJInterface
         {
             try
             {
-                this.socket = new Socket("localhost",6667);
+                this.socket = new Socket(address,port);
 
                 out = this.socket.getOutputStream();
                 oout = new ObjectOutputStream(out);
@@ -54,26 +58,27 @@ public class GameRoomJoin implements GRJInterface
                 in = socket.getInputStream();
                 oin = new ObjectInputStream(in);
 
-                Data msg = new Data(DataType.CONNECT, name, "");
-                oout.writeObject(msg);
+                System.out.println(name);
 
+                MainData msg = new MainData("CONNECT", name, "");
+                oout.writeObject(msg);
                 while(this.socket.isConnected())
                 {
-                    Data incomingmsg = (Data) oin.readObject();
+                    MainData incomingmsg = (MainData) oin.readObject();
+                    System.out.println(incomingmsg.getDataType());
                     if(incomingmsg != null)
                     {
                         switch (incomingmsg.getDataType())
                         {
                             case CONNECT_SUCCESS:
                             {
-                                controller.room_client();
-                                controller.updatePlayersList(PlayersList(incomingmsg.getContent()));
+                                controller.username_setLabel();
+                                //System.out.println("Siker!");
                                 break;
                             }
-                            case PLAYER_JOIN:
+                            case LOBBY_CHAT:
                             {
-                                controller.room_input_text("Server: [" + incomingmsg.getName() + "] játékos csatlakozott a szobához!");
-                                controller.addPlayer(new User(incomingmsg.getName()));
+                                controller.lobby_input_text(incomingmsg);
                                 break;
                             }
                             case DISCONNECT:
@@ -81,21 +86,12 @@ public class GameRoomJoin implements GRJInterface
                                 if(incomingmsg.getName().equals(name))
                                 {
                                     //...
-                                    break;
                                 }
                                 else
                                 {
-                                    controller.room_input_text("Server: [" + incomingmsg.getName() + "] játékos lelépett!");
-                                    controller.removePlayer(incomingmsg.getName());
-                                    break;
+                                    controller.lobby_input_text("Server: [" + incomingmsg.getName() + "] játékos lelépett!");
                                 }
                             }
-                            case CHAT:
-                            {
-                                controller.room_input_text(incomingmsg);
-                                break;
-                            }
-
                             default:
                             {
                                 System.out.println("... " + incomingmsg.toString());
@@ -108,53 +104,44 @@ public class GameRoomJoin implements GRJInterface
 
             }catch(IOException IOE)
             {
-                //IOE.printStackTrace();
-                controller.connect_failed();
+                System.out.println(this.socket);
+                network = false;
+                ;
             }catch(ClassNotFoundException CNFE)
             {
-                CNFE.printStackTrace();
             }
         }
     }
 
-
     @Override
-    public void MsgSend(String msg)
+    public void MsgSend (String msg)
     {
-        Data data = new Data(DataType.CHAT, this.name, msg );
-        this.sendMSG(data);
-        this.controller.room_input_text(data);
-    }
-
-    @Override
-    public void CheckReady(boolean ready)
-    {
-        ;
-    }
-
-    @Override
-    public void Close()
-    {
-        Data msg = new Data(DataType.DISCONNECT, this.name, "");
-        this.sendMSG(msg);
-    }
-
-    private List<User> PlayersList(String s)
-    {
-        List<User> list = new ArrayList<User>();
-
-        String[] sTmp = s.split(";");
-        for(int i=0; i< sTmp.length;i++)
+        if(this.oout != null)
         {
-            String[] sName = sTmp[i].split(",");
-            User u = new User(sName[0]);
-            u.set_ready(Boolean.parseBoolean(sName[1]));
-            list.add(u);
+            MainData data = new MainData(DataType.LOBBY_CHAT, this.name, msg);
+            this.sendMSG(data);
         }
-        return list;
+        else
+        {
+            controller.lobby_input_text("[HIBA] Elnézést kérjük! A szerver nem elérhető!");
+        }
+
     }
 
-    private void sendMSG(Data msg)
+    public void Exit()
+    {
+        if(this.oout != null)
+        {
+            MainData data = new MainData(DataType.DISCONNECT,this.name,"");
+            this.sendMSG(data);
+        }else
+        {
+            ;
+        }
+
+    }
+
+    private void sendMSG(MainData msg)
     {
         try
         {
@@ -165,5 +152,4 @@ public class GameRoomJoin implements GRJInterface
             ;
         }
     }
-
 }

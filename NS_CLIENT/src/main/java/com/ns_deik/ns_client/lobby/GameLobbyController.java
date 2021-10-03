@@ -1,9 +1,10 @@
 package com.ns_deik.ns_client.lobby;
 
+import Server.MainData;
 import com.ns_deik.ns_client.Main;
 import com.ns_deik.ns_client.gameroom.room_create.GameRoomCreateController;
 import com.ns_deik.ns_client.gameroom.room_join.GameRoomJoinController;
-import com.ns_deik.ns_client.mainServer.ConnectToServer;
+import com.ns_deik.ns_client.mainServer.MainServer;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,6 +19,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.*;
 import java.net.URL;
@@ -31,9 +33,9 @@ public class GameLobbyController implements Initializable
     private Scene scene;
 
     //Networking
-    private ConnectToServer cts;
     private DataInputStream in = null;
     private DataOutputStream out = null;
+    private MainServer client;
 
     //Username
     private String name;
@@ -48,59 +50,77 @@ public class GameLobbyController implements Initializable
     @FXML
     private TextField gamelobby_input;
     @FXML
-    private Button room_create,room_join;
+    private Button room_create,room_join,exit_button;
 
-    public GameLobbyController(int width, int height, Stage stage,ConnectToServer cts, String name)
-    {
-        this.width = width;
-        this.height = height;
-        this.stage = stage;
-        this.cts = cts;
+
+    public GameLobbyController(String name,Stage stage){
         this.name = name;
+        this.stage = stage;
     };
+    public GameLobbyController(String name,Stage stage ,MainServer client){
+        this.name = name;
+        this.stage = stage;
+        this.client = client;
+    };
+
+    private void server_join()
+    {
+        this.client = new MainServer(this,this.name);
+    }
 
     public void username_setLabel()
     {
         name_label.setText(name);
     }
 
-    public void lobby_chat()
+
+    public void send_chat_msg(String msg)
     {
-        GamelobbyChat lobby_task = new GamelobbyChat(this.cts.getSocket(), this);
-        Thread th = new Thread(lobby_task);
-        th.start();
+        if(!msg.isEmpty())
+        {
+            this.client.MsgSend(msg);
+        }
+        gamelobbytextarea.appendText(name + ": "+ msg +"\n");
     }
+
+    public void lobby_input_text(String text)
+    {
+            this.gamelobbytextarea.appendText(text + "\n");
+    }
+
+
+    public void lobby_input_text(MainData data)
+    {
+        this.lobby_input_text("\n" + data.getName() + ": " + data.getContent());
+    }
+
+    private void exit()
+    {
+        this.client.Exit();
+    }
+
+
 
    public void initialize(URL url, ResourceBundle rb)
    {
-       username_setLabel();
-       lobby_chat(); //WARNING - Thread
+       server_join();
 
-       //Chat -->Enter chat...
        gamelobby_input.setOnKeyPressed(new EventHandler<KeyEvent>() {
            @Override
            public void handle(KeyEvent keyEvent) {
-               try
+
+               if(keyEvent.getCode().equals(KeyCode.ENTER))
                {
-                   out = new DataOutputStream(cts.getSocket().getOutputStream());
-                    if(keyEvent.getCode().equals(KeyCode.ENTER))
-                    {
-                        String msg = gamelobby_input.getText();
-                        if(msg.length() == 0)
-                        {
-                            ;
-                        }
-                        else
-                        {
-                            out.writeUTF("["+name+"]: " + msg +"\n");
-                            out.flush();
-                        }
-                        gamelobby_input.clear();
-                    }
-               }
-               catch(IOException IOE)
-               {
-                   System.err.println(IOE);
+                   String msg = gamelobby_input.getText();
+                   if(msg.length() == 0)
+                   {
+                       ;
+                   }
+                   else
+                   {
+                       send_chat_msg(msg);
+                   }
+                   gamelobby_input.clear();
                }
            }
        });
@@ -112,7 +132,7 @@ public class GameLobbyController implements Initializable
                try {
                FXMLLoader GameRoomCreate = new FXMLLoader(Main.class.getResource("gameroomcreate.fxml"));
 
-               GameRoomCreateController roomcreatectrl = new GameRoomCreateController(cts.getSocket(), name, stage, "rc_server");
+               GameRoomCreateController roomcreatectrl = new GameRoomCreateController(client, name, stage, "rc_server");
                GameRoomCreate.setController(roomcreatectrl);
 
                scene = new Scene(GameRoomCreate.load(),1024,768);
@@ -135,7 +155,7 @@ public class GameLobbyController implements Initializable
                {
                    FXMLLoader GameRoomJoin = new FXMLLoader(Main.class.getResource("gameroomjoin.fxml"));
 
-                   GameRoomJoinController roomjoinctrl = new GameRoomJoinController(cts.getSocket(), name, stage, "rj_client");
+                   GameRoomJoinController roomjoinctrl = new GameRoomJoinController(client, name, stage, "rj_client");
                    GameRoomJoin.setController(roomjoinctrl);
 
                    scene = new Scene(GameRoomJoin.load(),1024,768);
@@ -149,6 +169,22 @@ public class GameLobbyController implements Initializable
                    e.printStackTrace();
                }
 
+           }
+       });
+
+       stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+           @Override
+           public void handle(WindowEvent windowEvent) {
+               exit();
+               System.exit(0);
+           }
+       });
+
+       exit_button.setOnMousePressed(new EventHandler<MouseEvent>() {
+           @Override
+           public void handle(MouseEvent mouseEvent) {
+               exit();
+               System.exit(0);
            }
        });
    }

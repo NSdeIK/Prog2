@@ -1,0 +1,6 @@
+package Server;
+
+public enum DataType {
+
+    CONNECT,CONNECT_SUCCESS, CONNECT_BAD, PING, SETROOM, GETROOMIP, LOBBY_CHAT, DISCONNECT
+}
