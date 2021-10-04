@@ -26,42 +26,43 @@
 
 	 - Kliens
 		 - Játék
-			 - Szókincsfejlesztő
-				 - Magyar - SQL
-				 - Angol - SQL
-			- Memóriafejlesztő [csak 2 játékos --> Ideiglenes terv]
+			 - Szókincsfejlesztő  **0%**
+				 - Magyar - SQL **0%**
+				 - Angol - SQL **0%**
+			- Memóriafejlesztő [csak 2 játékos --> Ideiglenes terv] **0%**
 		 - Beállítások
-			 - Képernyő méret
-			 - Hangok
+			 - Képernyő méret - **15%**
+			 - Hangok - **0%**
 		 - Felhasználónév [Játékos]
-			 - Felh./Jelszó rendszer
-				 - Létezik-e? Ellenőrzések
-				 - XP rendszer
-				 - Pont rendszer
+    		 - Felhasználónév rendszer **45%**
+			 - Felh./Jelszó rendszer **0%**
+				 - Létezik-e? Ellenőrzések **0%**
+				 - XP rendszer **0%**
+				 - Pont rendszer **0%**
 		 - Szoba + Chat
-			 - Létrehozás
-				 - Szobakód generálása
-				 - Játékmód választás
-				 - Játékosok kirúgása/bannolása
-				 - Játék elindítása [xy mennyiség játékos]
-				 - Chat
+			 - Létrehozás **50%**
+				 - Szobakód generálása **100%**
+				 - Játékmód választás **0%**
+				 - Játékosok kirúgása/bannolása **0%**
+				 - Játék elindítása [xy mennyiség játékos] **0%**
+				 - Chat **85%**
 			 - Csatlakozás
-				 - Szobakód keresgélése --> Melyik IP címen van?
-				 - Chat
-				 - Készenállás/Ready funkció 
+				 - Szobakód keresgélése --> Melyik IP címen van? **0%**
+				 - Chat **85%**
+				 - Készenállás/Ready funkció  **0%**
 		 - Lobby
-			 - Chat
-			 - Profil megtekintése
-			 - Shop rendszer (pontok) [Ideglenes terv]
+			 - Chat **85%**
+			 - Profil megtekintése **0%**
+			 - Shop rendszer (pontok) [Ideglenes terv] **0%**
 	 - Szerver
-		 - Szobalétrehozás --> Kliens lesz majd a szerver
-		 - Figyelés [ki merre hol van...]
-		 - Szobakód tárolása [kié ez a kód, ez az ip címé...]
-		 - SQL biztosítása
-		 - Játék kérések biztosítása
+		 - Szobalétrehozás --> Kliens lesz majd a szerver **85%**
+		 - Figyelés [ki merre hol van...] **0%**
+		 - Szobakód tárolása [kié ez a kód, ez az ip címé...] **0%**
+		 - SQL biztosítása **0%**
+		 - Játék kérések biztosítása **0%**
 		 
 > **Megjegyzés:** Bővűlni fog majd a lista, és jelenlegi fejlesztések százalékkal lesz mérve.
-5. ## Dokumentációk
-		Hamarosan...
+1. ## Dokumentációk
+   > [Dokumentáció](https://github.com/NSdeIK/Prog2/blob/main/Dokumentacio/Dokumentaciok.md)
 
 
