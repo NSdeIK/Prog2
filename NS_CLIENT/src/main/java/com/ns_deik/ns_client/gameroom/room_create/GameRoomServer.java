@@ -3,6 +3,7 @@ package com.ns_deik.ns_client.gameroom.room_create;
 import com.ns_deik.ns_client.gameroom.Data;
 import com.ns_deik.ns_client.gameroom.DataType;
 import com.ns_deik.ns_client.gameroom.User;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -179,9 +180,14 @@ public class GameRoomServer implements GRSInterface {
                                 break;
 
                             }
+                            case PLAYER_MOVEMENT:
+                            {
+                                double x = incomingmsg.getX();
+                                double y = incomingmsg.getY();
+                                controller.GameBoard_PlayerMovement(x,y, incomingmsg.getName());
+                            }
                             default:
                             {
-                                System.out.println("....");
                                 break;
                             }
 
@@ -247,6 +253,18 @@ public class GameRoomServer implements GRSInterface {
         this.serverlisten.CloseServer();
     }
 
+    public void gameboardready(char[][] matrix)
+    {
+        Data data = new Data(DataType.START_GAME, name, matrix);
+        broadcastmsg(data);
+    }
+
+    public void gameboardgui(ArrayList<String> players)
+    {
+        Data data = new Data(DataType.GAMEBOARD_GUI, name, players);
+        broadcastmsg(data);
+    }
+
     private void broadcastmsg(Data data)
     {
         for(int i=1; i < this.players.size(); i++)
@@ -265,6 +283,12 @@ public class GameRoomServer implements GRSInterface {
         }
     }
 
+    public void gameplayermovement(double x, double y)
+    {
+        Data data = new Data(DataType.PLAYER_MOVEMENT, name, x,y);
+        broadcastmsg(data);
+    }
+
     private String getPlayerList()
     {
         String list = "";
@@ -272,6 +296,18 @@ public class GameRoomServer implements GRSInterface {
         {
             User p = this.players.get(i);
             list += p.getname() + "," + p.is_ready_check();
+            list += (i == this.players.size() - 1 ? "" : ";" );
+        }
+        return list;
+    }
+
+    private String getReadyPlayers()
+    {
+        String list = "";
+        for(int i = 0; i < this.players.size();++i)
+        {
+            User p = this.players.get(i);
+            list += p.getname();
             list += (i == this.players.size() - 1 ? "" : ";" );
         }
         return list;

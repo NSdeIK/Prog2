@@ -2,6 +2,7 @@ package com.ns_deik.ns_client.gameroom.room_join;
 
 import com.ns_deik.ns_client.Main;
 import com.ns_deik.ns_client.gameroom.Data;
+import com.ns_deik.ns_client.gameroom.GameBoardMain;
 import com.ns_deik.ns_client.gameroom.User;
 import com.ns_deik.ns_client.lobby.GameLobbyController;
 import com.ns_deik.ns_client.mainServer.MainServer;
@@ -11,12 +12,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -28,12 +32,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.CountDownLatch;
 
 public class GameRoomJoinController implements Initializable {
 
     private Stage stage;
     private String name;
     private String state;
+    private GameBoardMain gameboard;
     GameRoomJoin client;
     MainServer server;
     String room;
@@ -50,6 +56,8 @@ public class GameRoomJoinController implements Initializable {
     VBox JoinRoom;
     @FXML
     Button return_lobby;
+    @FXML
+    AnchorPane join_pane;
 
     @FXML
     private ListView<HBox> ListViewPlayersC;
@@ -65,6 +73,57 @@ public class GameRoomJoinController implements Initializable {
         this.stage = stage;
         this.state = state;
 
+    }
+
+    final CountDownLatch latch = new CountDownLatch(1);
+
+    public void GameBoard_Ready(char[][] matrix)
+    {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                try
+                {
+                    FXMLLoader loader = new FXMLLoader(Main.class.getResource("gameboard.fxml"));
+                    gameboard = new GameBoardMain(name,"client",client,matrix);
+                    loader.setController(gameboard);
+
+                    Scene loadscene = new Scene(loader.load(),1024,768);
+                    gameboard.setscene(loadscene);
+                    stage.setScene(loadscene);
+                    stage.show();
+
+                    latch.countDown();
+                    gameboard.focus();
+                }catch(IOException IOE)
+                {
+                    ;
+                }
+            }
+        });
+
+    }
+
+    public void GameBoard_Players(ArrayList playerslist)
+    {
+        try {
+            latch.await();
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    gameboard.setPlayers(playerslist);
+                    gameboard.GameBoardPlayers();
+                }
+            });
+        }catch(InterruptedException IE)
+        {
+            ;
+        }
+    }
+
+    public void GameBoard_PlayerMovement(double x, double y, String p_name)
+    {
+        gameboard.setPlayerMovement(x,y, p_name);
     }
 
     public void initialize(URL url, ResourceBundle rs)
@@ -110,6 +169,7 @@ public class GameRoomJoinController implements Initializable {
                     FXMLLoader GameLobbyFXML = new FXMLLoader(Main.class.getResource("gamelobby.fxml"));
                     GameLobbyController gamelobby = new GameLobbyController(name,stage, server);
                     GameLobbyFXML.setController(gamelobby);
+
                     Scene scene = new Scene(GameLobbyFXML.load(),1024,768);
 
                     stage.setScene(scene);
@@ -274,5 +334,6 @@ public class GameRoomJoinController implements Initializable {
         }
 
     }
+
 
 }

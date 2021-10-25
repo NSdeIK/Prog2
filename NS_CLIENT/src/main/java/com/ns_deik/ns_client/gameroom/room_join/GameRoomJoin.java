@@ -3,6 +3,8 @@ package com.ns_deik.ns_client.gameroom.room_join;
 import com.ns_deik.ns_client.gameroom.Data;
 import com.ns_deik.ns_client.gameroom.DataType;
 import com.ns_deik.ns_client.gameroom.User;
+import javafx.scene.Group;
+import javafx.scene.layout.GridPane;
 
 import java.io.*;
 import java.net.Socket;
@@ -13,6 +15,11 @@ public class GameRoomJoin implements GRJInterface
 {
     private GameRoomJoinController controller;
     private ClientListen clientlisten;
+
+    public void setcontroller(GameRoomJoinController controller)
+    {
+        this.controller = controller;
+    }
 
     private String name;
 
@@ -60,7 +67,8 @@ public class GameRoomJoin implements GRJInterface
                 while(this.socket.isConnected())
                 {
                     Data incomingmsg = (Data) oin.readObject();
-                    if(incomingmsg != null)
+                    System.out.println(incomingmsg.getPlayers());
+                    if(incomingmsg.getDataType() != null)
                     {
                         switch (incomingmsg.getDataType())
                         {
@@ -95,10 +103,27 @@ public class GameRoomJoin implements GRJInterface
                                 controller.room_input_text(incomingmsg);
                                 break;
                             }
+                            case START_GAME:
+                            {
+                                char[][] matrix = incomingmsg.getMatrix();
+                                controller.GameBoard_Ready(matrix);
+                                break;
+                            }
+                            case GAMEBOARD_GUI:
+                            {
+                                controller.GameBoard_Players(incomingmsg.getPlayers());
+                                break;
+                            }
+                            case PLAYER_MOVEMENT:
+                            {
+                                double x = incomingmsg.getX();
+                                double y = incomingmsg.getY();
+                                controller.GameBoard_PlayerMovement(x,y, incomingmsg.getName());
+                            }
 
                             default:
                             {
-                                System.out.println("... " + incomingmsg.toString());
+                                //System.out.println("... " + incomingmsg.toString());
                                 break;
                             }
                         }
@@ -108,7 +133,7 @@ public class GameRoomJoin implements GRJInterface
 
             }catch(IOException IOE)
             {
-                //IOE.printStackTrace();
+                IOE.printStackTrace();
                 controller.connect_failed();
             }catch(ClassNotFoundException CNFE)
             {
@@ -124,6 +149,12 @@ public class GameRoomJoin implements GRJInterface
         Data data = new Data(DataType.CHAT, this.name, msg );
         this.sendMSG(data);
         this.controller.room_input_text(data);
+    }
+    @Override
+    public void gameplayermovement(double x, double y)
+    {
+        Data data = new Data(DataType.PLAYER_MOVEMENT, this.name, x,y);
+        this.sendMSG(data);
     }
 
     @Override

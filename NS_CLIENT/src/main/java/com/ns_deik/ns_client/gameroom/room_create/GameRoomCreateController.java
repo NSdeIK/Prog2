@@ -2,10 +2,12 @@ package com.ns_deik.ns_client.gameroom.room_create;
 
 import com.ns_deik.ns_client.Main;
 import com.ns_deik.ns_client.gameroom.Data;
+import com.ns_deik.ns_client.gameroom.GameBoardMain;
 import com.ns_deik.ns_client.gameroom.User;
 import com.ns_deik.ns_client.lobby.GameLobbyController;
 import com.ns_deik.ns_client.mainServer.MainServer;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,6 +18,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
@@ -23,6 +26,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.concurrent.CountDownLatch;
 
 public class GameRoomCreateController implements Initializable {
 
@@ -33,6 +37,7 @@ public class GameRoomCreateController implements Initializable {
     private Stage stage;
     private ArrayList<User> players = new ArrayList<User>();
     private MainServer main_server;
+    private GameBoardMain gameboard;
 
     private int connectedPlayers;
 
@@ -46,13 +51,16 @@ public class GameRoomCreateController implements Initializable {
     private TextArea room_chat;
 
     @FXML
+    private AnchorPane AnchorPane;
+
+    @FXML
     private TextField room_chat_input;
 
     @FXML
     private TextField room_code;
 
     @FXML
-    private Button return_lobby;
+    private Button return_lobby,game_start;
 
     char code[] = {'0','1','2','3','4','5','6','7','8','9',
                    'A','B','C','D','E','F','G','H','I','J',
@@ -133,6 +141,47 @@ public class GameRoomCreateController implements Initializable {
         this.room_chat_input.setText("");
     }
 
+    final CountDownLatch latch = new CountDownLatch(1);
+
+    private void GameBoard_Ready()
+    {
+        try
+        {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("gameboard.fxml"));
+            gameboard = new GameBoardMain(name,"server",server,listNames, connectedPlayers);
+            loader.setController(gameboard);
+            Scene loadscene = new Scene(loader.load(),1024,768);
+            gameboard.setscene(loadscene);
+            stage.setScene(loadscene);
+            stage.show();
+
+            latch.countDown();
+            gameboard.focus();
+
+        } catch (IOException IOE)
+        {
+            IOE.printStackTrace();
+        }
+    }
+
+    public void GameBoard_PlayerMovement(double x, double y, String name)
+    {
+
+        try{
+            latch.await();
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    gameboard.setPlayerMovement(x,y,name);
+                }
+            });
+
+        }catch(InterruptedException IE)
+        {
+            ;
+        }
+
+    }
 
     public void initialize(URL url, ResourceBundle rb)
     {
@@ -156,7 +205,7 @@ public class GameRoomCreateController implements Initializable {
             room_generator();
             room_code_string = room_code.getText();
             this.server = new GameRoomServer(this, this.name, room_code_string);
-
+            System.out.println("Create controller: " + server);
             this.listNames.get(0).setText(this.name);
             this.ListViewPlayers.getItems().get(0).setVisible(true);
 
@@ -173,6 +222,13 @@ public class GameRoomCreateController implements Initializable {
             }
         });
 
+        game_start.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                GameBoard_Ready();
+            }
+        });
+
         return_lobby.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -184,7 +240,6 @@ public class GameRoomCreateController implements Initializable {
                     GameLobbyController gamelobby = new GameLobbyController(name,stage, main_server);
                     GameLobbyFXML.setController(gamelobby);
                     Scene scene = new Scene(GameLobbyFXML.load(),1024,768);
-
                     stage.setScene(scene);
                     stage.setTitle("[NS-DEIK] Játék - Lobby");
                     stage.show();
