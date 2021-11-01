@@ -182,6 +182,10 @@ public class GameRoomCreateController implements Initializable {
         }
 
     }
+    public void GameBoard_WaitingPlayersReady()
+    {
+        gameboard.WaitingPlayersReady();
+    }
 
     public void initialize(URL url, ResourceBundle rb)
     {
@@ -205,7 +209,7 @@ public class GameRoomCreateController implements Initializable {
             room_generator();
             room_code_string = room_code.getText();
             this.server = new GameRoomServer(this, this.name, room_code_string);
-            System.out.println("Create controller: " + server);
+            //System.out.println("Create controller: " + server);
             this.listNames.get(0).setText(this.name);
             this.ListViewPlayers.getItems().get(0).setVisible(true);
 

@@ -121,6 +121,26 @@ public class GameRoomJoinController implements Initializable {
         }
     }
 
+    public void GameBoard_WaitingPlayers()
+    {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                gameboard.WaitingPlayers();
+            }
+        });
+    }
+
+    public void GameBoard_WaitingPlayersReady()
+    {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                gameboard.WaitingPlayersReady();
+            }
+        });
+    }
+
     public void GameBoard_PlayerMovement(double x, double y, String p_name)
     {
         gameboard.setPlayerMovement(x,y, p_name);

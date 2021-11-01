@@ -10,4 +10,6 @@ public interface GRSInterface
     public void gameboardready(char[][] matrix);
     public void gameboardgui(ArrayList<String> players);
     public void gameplayermovement(double x, double y);
+    public void waitingplayers();
+    public void waitingplayersready();
 }

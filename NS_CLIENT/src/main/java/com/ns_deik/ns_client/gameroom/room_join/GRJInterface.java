@@ -6,4 +6,5 @@ public interface GRJInterface
     public void CheckReady(boolean ready);
     public void Close();
     public void gameplayermovement(double x, double y);
+    public void WaitingPlayersReady();
 }

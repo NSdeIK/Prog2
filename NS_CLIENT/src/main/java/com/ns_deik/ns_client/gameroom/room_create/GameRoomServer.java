@@ -112,7 +112,7 @@ public class GameRoomServer implements GRSInterface {
 
         public ClientHandler(Socket socket)
         {
-            System.out.println("Server --> valaki csatlakozott...");
+            //System.out.println("Server --> valaki csatlakozott...");
             this.socket = socket;
         }
 
@@ -134,7 +134,7 @@ public class GameRoomServer implements GRSInterface {
                         {
                             case CONNECT:
                             {
-                                System.out.println("Előtte: "+players.size());
+                                //System.out.println("Előtte: "+players.size());
                                 Data msgreply = new Data();
                                 User p = new User(incomingmsg.getName(), this.socket.getInetAddress());
                                 players.add(p);
@@ -152,7 +152,7 @@ public class GameRoomServer implements GRSInterface {
                                 controller.room_input("Szerver: [" +incomingmsg.getName() + "] játékos csatlakozott a szobához!");
 
                                 this.oout.writeObject(msgreply);
-                                System.out.println("Utána: "+players.size());
+                                //System.out.println("Utána: "+players.size());
                                 break;
                             }
                             case DISCONNECT:
@@ -185,6 +185,13 @@ public class GameRoomServer implements GRSInterface {
                                 double x = incomingmsg.getX();
                                 double y = incomingmsg.getY();
                                 controller.GameBoard_PlayerMovement(x,y, incomingmsg.getName());
+                                broadcastmsg(incomingmsg);
+                                break;
+                            }
+                            case WAITING_PLAYERS_READY:
+                            {
+                                controller.GameBoard_WaitingPlayersReady();
+                                break;
                             }
                             default:
                             {
@@ -286,6 +293,18 @@ public class GameRoomServer implements GRSInterface {
     public void gameplayermovement(double x, double y)
     {
         Data data = new Data(DataType.PLAYER_MOVEMENT, name, x,y);
+        broadcastmsg(data);
+    }
+
+    public void waitingplayers()
+    {
+        Data data = new Data(DataType.WAITING_PLAYERS,name,"");
+        broadcastmsg(data);
+    }
+
+    public void waitingplayersready()
+    {
+        Data data = new Data(DataType.WAITING_PLAYERS_READY,name,"");
         broadcastmsg(data);
     }
 

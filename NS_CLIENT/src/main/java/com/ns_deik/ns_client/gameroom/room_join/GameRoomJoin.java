@@ -67,7 +67,7 @@ public class GameRoomJoin implements GRJInterface
                 while(this.socket.isConnected())
                 {
                     Data incomingmsg = (Data) oin.readObject();
-                    System.out.println(incomingmsg.getPlayers());
+                    //System.out.println(incomingmsg.getPlayers());
                     if(incomingmsg.getDataType() != null)
                     {
                         switch (incomingmsg.getDataType())
@@ -119,6 +119,17 @@ public class GameRoomJoin implements GRJInterface
                                 double x = incomingmsg.getX();
                                 double y = incomingmsg.getY();
                                 controller.GameBoard_PlayerMovement(x,y, incomingmsg.getName());
+                                break;
+                            }
+                            case WAITING_PLAYERS:
+                            {
+                                controller.GameBoard_WaitingPlayers();
+                                break;
+                            }
+                            case WAITING_PLAYERS_READY:
+                            {
+                                controller.GameBoard_WaitingPlayersReady();
+                                break;
                             }
 
                             default:
@@ -154,6 +165,12 @@ public class GameRoomJoin implements GRJInterface
     public void gameplayermovement(double x, double y)
     {
         Data data = new Data(DataType.PLAYER_MOVEMENT, this.name, x,y);
+        this.sendMSG(data);
+    }
+
+    public void WaitingPlayersReady()
+    {
+        Data data = new Data(DataType.WAITING_PLAYERS_READY, this.name, "");
         this.sendMSG(data);
     }
 
