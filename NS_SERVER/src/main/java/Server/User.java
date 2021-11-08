@@ -6,6 +6,7 @@ public class User {
         private String name;
         private boolean check_ready;
         private InetAddress ip;
+        private String room = "";
 
         public User(String name)
         {
@@ -35,13 +36,17 @@ public class User {
             this.check_ready = ready_check;
         }
 
-        public InetAddress getIP()
+        public String getIP()
         {
-            return ip;
+            return ip.getHostAddress();
         }
 
         public void setIP(InetAddress ip)
         {
             this.ip = ip;
         }
+
+        public String getRoom() { return room; }
+
+        public void setRoom(String room) { this.room = room; }
 }

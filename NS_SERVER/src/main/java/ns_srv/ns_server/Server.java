@@ -1,6 +1,8 @@
 package ns_srv.ns_server;
 
 import Server.*;
+import com.lambdaworks.crypto.SCrypt;
+import com.lambdaworks.crypto.SCryptUtil;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -30,6 +32,9 @@ public class Server extends Application implements ServerInterface {
 
     private ServerListen serverListen;
 
+    private Database db;
+
+    private User p;
 
     private boolean isClosed = false;
 
@@ -54,6 +59,15 @@ public class Server extends Application implements ServerInterface {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
+
+        //If database missing (Recovery - Manual)
+            //Database create
+            db = new Database();
+            //db.CreateDatabase("demo.db");
+
+            //Database connection test
+            db.DBConnect();
+            //db.check();
     }
 
     @FXML
@@ -148,27 +162,26 @@ public class Server extends Application implements ServerInterface {
                     MainData incomingmsg = (MainData) this.oin.readObject();
                     if(incomingmsg != null)
                     {
-                        System.out.println(incomingmsg.getName() +": " +incomingmsg.getDataType());
+                        if(incomingmsg.getName() == null)
+                        {
+                            System.out.println("Ismeretlen: " + incomingmsg.getDataType());
+                        }
+                        else
+                        {
+                            System.out.println(incomingmsg.getName() + ": " + incomingmsg.getDataType());
+                        }
+
                         switch(incomingmsg.getDataType())
                         {
                             case CONNECT:
                             {
                                 MainData msgreply = new MainData();
-                                User p = new User(incomingmsg.getName(),this.socket.getInetAddress());
-                                players.add(p);
                                 writers.add(this.oout);
 
                                 msgreply.setDataType(DataType.CONNECT_SUCCESS);
                                 msgreply.setName(incomingmsg.getName());
 
                                 this.oout.writeObject(msgreply);
-                                Platform.runLater(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        clients_size.setText(String.valueOf(players.size()));
-                                    }
-                                });
-                                System.out.println("Játékos száma: [" + players.size()+"]");
                                 break;
                             }
                             case LOBBY_CHAT:
@@ -185,7 +198,6 @@ public class Server extends Application implements ServerInterface {
                                 {
                                     if(players.get(i).getname().equals(incomingmsg.getName()))
                                     {
-                                        System.out.println("Egy játékos lelépett!\nElőtte: " + players.size());
                                         players.remove(i);
                                         writers.remove(i);
                                         Platform.runLater(new Runnable() {
@@ -194,11 +206,84 @@ public class Server extends Application implements ServerInterface {
                                                 clients_size.setText(String.valueOf(players.size()));
                                             }
                                         });
-                                        System.out.println("Utána: " + players.size());
                                         break;
                                     }
                                 }
                                 socket.close();
+                                break;
+                            }
+                            case REGISTER_USER:
+                            {
+                                db = new Database();
+                                db.createUser(incomingmsg.getName(),SCryptUtil.scrypt(incomingmsg.getContent(),16,16,16));
+                                MainData msgreply = new MainData();
+                                if(db.getstatus() == true)
+                                {
+                                    msgreply.setDataType(DataType.REGISTER_USER_SUCCESS);
+                                    this.oout.writeObject(msgreply);
+                                }
+                                else
+                                {
+                                    msgreply.setDataType(DataType.REGISTER_USER_FAIL);
+                                    this.oout.writeObject(msgreply);
+                                }
+                                db = null;
+                                break;
+                            }
+                            case LOGIN_USER:
+                            {
+                                db = new Database();
+                                db.loginUser(incomingmsg.getName(),incomingmsg.getContent());
+                                MainData msgreply = new MainData();
+                                if(db.getstatus() == true)
+                                {
+                                    msgreply.setDataType(DataType.LOGIN_USER_SUCCESS);
+                                    p = new User(incomingmsg.getName(),this.socket.getInetAddress());
+                                    players.add(p);
+                                    Platform.runLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            clients_size.setText(String.valueOf(players.size()));
+                                        }
+                                    });
+                                    this.oout.writeObject(msgreply);
+                                }
+                                else
+                                {
+                                    msgreply.setDataType(DataType.LOGIN_USER_FAIL);
+                                    this.oout.writeObject(msgreply);
+                                }
+                                db = null;
+                                break;
+                            }
+                            case ROOM_CREATE:
+                            {
+                                for(int i=0; i < players.size(); ++i)
+                                {
+                                    if(players.get(i).getname().equals(incomingmsg.getName()))
+                                    {
+                                        p.setRoom(incomingmsg.getContent());
+                                        break;
+                                    }
+                                }
+                            }
+                            case ROOM_JOIN:
+                            {
+                                String ip = "";
+                                for(int i=0; i < players.size(); ++i)
+                                {
+                                    String roomcode = players.get(i).getRoom();
+                                    String roomcode2 = incomingmsg.getContent();
+                                    if(roomcode.equals(roomcode2))
+                                    {
+                                        ip = players.get(i).getIP();
+                                        break;
+                                    }
+                                }
+                                MainData msgreply = new MainData();
+                                msgreply.setDataType(DataType.ROOM_JOIN);
+                                msgreply.setContent(ip);
+                                this.oout.writeObject(msgreply);
                                 break;
                             }
 
@@ -249,16 +334,19 @@ public class Server extends Application implements ServerInterface {
     @FXML
     protected void button_off() throws IOException
     {
-        serverListen.Close();
-        this.isClosed = true;
-        status_label.setText("Off");
-        players.clear();
-
-        System.out.println("Sikeresen lekapcsolódott az összes kliens!");
-        clients_size.setText(String.valueOf(players.size()));
+        if(this.serverListen!= null)
+        {
+            serverListen.Close();
+            this.isClosed = true;
+            status_label.setText("Off");
+            players.clear();
+            System.out.println("Sikeresen lekapcsolódott az összes kliens!");
+            clients_size.setText(String.valueOf(players.size()));
+        }
     }
 
     public static void main(String[] args) {
         launch(args);
+
     }
 }

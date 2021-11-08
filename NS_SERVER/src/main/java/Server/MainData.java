@@ -66,7 +66,7 @@ public class MainData implements Serializable
         return content;
     }
 
-    public void SetContent(String content)
+    public void setContent(String content)
     {
         this.content = content;
     }
