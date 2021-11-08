@@ -87,17 +87,15 @@ public class GameRoomJoinController implements Initializable {
                     FXMLLoader loader = new FXMLLoader(Main.class.getResource("gameboard.fxml"));
                     gameboard = new GameBoardMain(name,"client",client,matrix);
                     loader.setController(gameboard);
-
                     Scene loadscene = new Scene(loader.load(),1024,768);
                     gameboard.setscene(loadscene);
                     stage.setScene(loadscene);
                     stage.show();
-
                     latch.countDown();
                     gameboard.focus();
                 }catch(IOException IOE)
                 {
-                    ;
+                    IOE.getMessage();
                 }
             }
         });
@@ -148,15 +146,20 @@ public class GameRoomJoinController implements Initializable {
 
     public void initialize(URL url, ResourceBundle rs)
     {
+        server.setStatus("client");
         JoinRoom.setVisible(true);
         JoinedRoom.setVisible(false);
+        server.setJoinController(this);
         room_input.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
                 if(keyEvent.getCode().equals(KeyCode.ENTER))
                 {
                     room = room_input.getText();
-                    joinroom();
+                    if(!room.isEmpty())
+                    {
+                        server.RoomJoin(room);
+                    }
                 }
             }
         });
@@ -205,9 +208,9 @@ public class GameRoomJoinController implements Initializable {
 
     }
 
-    public void joinroom()
+    public void joinroom(String ip)
     {
-        this.client = new GameRoomJoin(this,room, name);
+        this.client = new GameRoomJoin(this,room, name, ip);
     }
 
     public void room_client() throws IOException

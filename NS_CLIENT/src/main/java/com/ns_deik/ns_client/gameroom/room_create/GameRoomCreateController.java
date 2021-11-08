@@ -62,6 +62,9 @@ public class GameRoomCreateController implements Initializable {
     @FXML
     private Button return_lobby,game_start;
 
+    @FXML
+    private Label error_text;
+
     char code[] = {'0','1','2','3','4','5','6','7','8','9',
                    'A','B','C','D','E','F','G','H','I','J',
                    'K','L','M','N','O','P','Q','R','S','U',
@@ -189,6 +192,8 @@ public class GameRoomCreateController implements Initializable {
 
     public void initialize(URL url, ResourceBundle rb)
     {
+        main_server.setStatus("server");
+        error_text.setVisible(false);
         this.listNames = new ArrayList<Label>();
 
         for(int i=0; i < max_players; ++i)
@@ -208,8 +213,8 @@ public class GameRoomCreateController implements Initializable {
         {
             room_generator();
             room_code_string = room_code.getText();
+            this.main_server.RoomCreate(room_code_string);
             this.server = new GameRoomServer(this, this.name, room_code_string);
-            //System.out.println("Create controller: " + server);
             this.listNames.get(0).setText(this.name);
             this.ListViewPlayers.getItems().get(0).setVisible(true);
 

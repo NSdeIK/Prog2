@@ -28,11 +28,11 @@ public class GameRoomJoin implements GRJInterface
     private OutputStream out;
     private ObjectOutputStream oout;
 
-    public GameRoomJoin(GameRoomJoinController controller, String room, String name)
+    public GameRoomJoin(GameRoomJoinController controller, String room, String name, String ip)
     {
         this.controller = controller;
         this.name = name;
-        this.clientlisten = new ClientListen("localhost",6667);
+        this.clientlisten = new ClientListen(ip,6667);
         this.clientlisten.start();
     }
 
@@ -53,7 +53,7 @@ public class GameRoomJoin implements GRJInterface
         {
             try
             {
-                this.socket = new Socket("localhost",6667);
+                this.socket = new Socket(address,6667);
 
                 out = this.socket.getOutputStream();
                 oout = new ObjectOutputStream(out);
@@ -105,8 +105,11 @@ public class GameRoomJoin implements GRJInterface
                             }
                             case START_GAME:
                             {
+                                System.out.println("itt?");
                                 char[][] matrix = incomingmsg.getMatrix();
+                                System.out.println("itt2?");
                                 controller.GameBoard_Ready(matrix);
+                                System.out.println("itt3?");
                                 break;
                             }
                             case GAMEBOARD_GUI:

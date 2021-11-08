@@ -76,7 +76,7 @@ public class HomepageController
         FXMLLoader GameFXML = new FXMLLoader(Main.class.getResource("game.fxml"));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         //GameController gameController = new GameController(width,height,stage);
-        GameController gameController = new GameController();
+        GameController gameController = new GameController(stage);
         GameFXML.setController(gameController);
 
         //Scene scene = new Scene(GameFXML.load(),width,height);  //Soon...

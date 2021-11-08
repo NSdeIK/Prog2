@@ -9,6 +9,7 @@ module com.ns_deik.ns_client {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires javafx.graphics;
+    requires scrypt;
 
     opens com.ns_deik.ns_client to javafx.fxml;
     exports com.ns_deik.ns_client;

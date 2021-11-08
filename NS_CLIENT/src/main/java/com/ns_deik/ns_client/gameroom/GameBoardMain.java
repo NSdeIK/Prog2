@@ -61,7 +61,7 @@ public class GameBoardMain
 
     //Gameboard generator code + GRID cols/rows
     private ArrayList randomChar = new ArrayList();
-    private char[][] matrix = new char[4][6];
+    private char[][] matrix = new char[4][5];
     private GridPane grid;
     private StackPane gridpane;
 
@@ -232,7 +232,14 @@ public class GameBoardMain
                     grid.add(gridpane, i, j);
                 }
             }
-
+            System.out.println(matrix);
+            for (int k=0; k<4; k++ )
+            {
+                for(int l=0;l<5; l++)
+                {
+                    System.out.println(matrix[k][l]);
+                }
+            }
             grid.setAlignment(Pos.CENTER);
             PaneFXML.getChildren().add(grid);
 
@@ -262,7 +269,6 @@ public class GameBoardMain
                         lava_view.setFitHeight(150);
                         gridpane.getChildren().add(lava_view);
                     }
-
 
                     gridpane.setMaxSize(150, 150);
                     grid.add(gridpane, i, j);

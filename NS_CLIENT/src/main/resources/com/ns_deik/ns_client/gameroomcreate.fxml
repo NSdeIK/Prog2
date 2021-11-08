@@ -12,7 +12,6 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -123,7 +122,7 @@
             <Font name="Bodoni MT Black" size="17.0" />
          </font>
       </TextField>
-      <Label layoutX="26.0" layoutY="531.0" text="Figyelmeztető szöveg...." textFill="#ff6300">
+      <Label fx:id="error_text" layoutX="26.0" layoutY="531.0" text="Figyelmeztető szöveg...." textFill="#ff6300">
          <font>
             <Font name="Lucida Calligraphy Italic" size="18.0" />
          </font>
@@ -138,6 +137,5 @@
             <Font name="Script MT Bold" size="36.0" />
          </font>
       </Button>
-      <Pane prefHeight="200.0" prefWidth="200.0" />
    </children>
 </AnchorPane>

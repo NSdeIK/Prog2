@@ -53,26 +53,16 @@ public class GameLobbyController implements Initializable
     private Button room_create,room_join,exit_button;
 
 
-    public GameLobbyController(String name,Stage stage){
-        this.name = name;
-        this.stage = stage;
-    };
     public GameLobbyController(String name,Stage stage ,MainServer client){
         this.name = name;
         this.stage = stage;
         this.client = client;
     };
 
-    private void server_join()
-    {
-        this.client = new MainServer(this,this.name);
-    }
-
     public void username_setLabel()
     {
         name_label.setText(name);
     }
-
 
     public void send_chat_msg(String msg)
     {
@@ -88,7 +78,6 @@ public class GameLobbyController implements Initializable
             this.gamelobbytextarea.appendText(text + "\n");
     }
 
-
     public void lobby_input_text(MainData data)
     {
         this.lobby_input_text("\n" + data.getName() + ": " + data.getContent());
@@ -99,11 +88,9 @@ public class GameLobbyController implements Initializable
         this.client.Exit();
     }
 
-
-
    public void initialize(URL url, ResourceBundle rb)
    {
-       server_join();
+       username_setLabel();
 
        gamelobby_input.setOnKeyPressed(new EventHandler<KeyEvent>() {
            @Override

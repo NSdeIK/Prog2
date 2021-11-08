@@ -3,6 +3,8 @@ package com.ns_deik.ns_client.mainServer;
 import Server.*;
 import com.ns_deik.ns_client.gameroom.Data;
 import com.ns_deik.ns_client.gameroom.User;
+import com.ns_deik.ns_client.gameroom.room_join.GameRoomJoinController;
+import com.ns_deik.ns_client.homepage.GameController;
 import com.ns_deik.ns_client.lobby.GameLobbyController;
 
 import java.io.*;
@@ -12,7 +14,9 @@ import java.util.ArrayList;
 public class MainServer implements SInterface {
 
     private boolean network = false;
-    private GameLobbyController controller;
+    private GameLobbyController lobbycontroller;
+    private GameController gamecontroller;
+    private GameRoomJoinController gameroomjoincontroller;
     private ClientListen clientlisten;
     private ArrayList<User> players;
 
@@ -23,15 +27,24 @@ public class MainServer implements SInterface {
     private OutputStream out;
     private ObjectOutputStream oout;
 
+    private String status = "";
+
+    public MainServer(){}
+
+    public MainServer(GameController controller, String name){
+        this.gamecontroller = controller;
+        this.name = name;
+        this.clientlisten = new ClientListen("localhost",6666);
+        this.clientlisten.start();
+    };
+
     public MainServer(GameLobbyController controller,String name)
     {
-        this.controller = controller;
+        this.lobbycontroller = controller;
         this.name = name;
-        this.clientlisten = new ClientListen("192.168.1.114",6666);
+        this.clientlisten = new ClientListen("localhost",6666);
         this.clientlisten.start();
     }
-
-    public MainServer(){};
 
     private class ClientListen extends Thread
     {
@@ -58,8 +71,6 @@ public class MainServer implements SInterface {
                 in = socket.getInputStream();
                 oin = new ObjectInputStream(in);
 
-                System.out.println(name);
-
                 MainData msg = new MainData("CONNECT", name, "");
                 oout.writeObject(msg);
                 while(this.socket.isConnected())
@@ -72,13 +83,13 @@ public class MainServer implements SInterface {
                         {
                             case CONNECT_SUCCESS:
                             {
-                                controller.username_setLabel();
+                                //controller.username_setLabel();
                                 //System.out.println("Siker!");
                                 break;
                             }
                             case LOBBY_CHAT:
                             {
-                                controller.lobby_input_text(incomingmsg);
+                                lobbycontroller.lobby_input_text(incomingmsg);
                                 break;
                             }
                             case DISCONNECT:
@@ -89,7 +100,36 @@ public class MainServer implements SInterface {
                                 }
                                 else
                                 {
-                                    controller.lobby_input_text("Server: [" + incomingmsg.getName() + "] játékos lelépett!");
+                                    lobbycontroller.lobby_input_text("Server: [" + incomingmsg.getName() + "] játékos lelépett!");
+                                }
+                            }
+                            case REGISTER_USER_SUCCESS:
+                            {
+                                System.out.println("Sikeres fiók létrehozása!");
+                                gamecontroller.jumpLoginPanel();
+                                break;
+                            }
+                            case REGISTER_USER_FAIL:
+                            {
+                                System.out.println("Nem sikerült létrehozni!");
+                                break;
+                            }
+                            case LOGIN_USER_SUCCESS:
+                            {
+                                gamecontroller.jumpLobbyPanel();
+                                break;
+                            }
+                            case LOGIN_USER_FAIL:
+                            {
+                                System.out.println("Rossz a jelszó!");
+                                break;
+                            }
+                            case ROOM_JOIN:
+                            {
+                                if(status.equals("client"))
+                                {
+                                    gameroomjoincontroller.joinroom(incomingmsg.getContent());
+                                    break;
                                 }
                             }
                             default:
@@ -113,6 +153,45 @@ public class MainServer implements SInterface {
         }
     }
 
+    public void setJoinController(GameRoomJoinController GRJC)
+    {
+        this.gameroomjoincontroller = GRJC;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public void setStatus(String status)
+    {
+        this.status = status;
+    }
+
+    public void RegisterMSG(String name, String password)
+    {
+        MainData data = new MainData(DataType.REGISTER_USER, name, password);
+        this.sendMSG(data);
+    }
+
+    public void LoginMSG(String name, String password)
+    {
+        MainData data = new MainData(DataType.LOGIN_USER, name, password);
+        this.sendMSG(data);
+    }
+
+    public void RoomCreate(String roomkey)
+    {
+        MainData data = new MainData(DataType.ROOM_CREATE, name, roomkey);
+        this.sendMSG(data);
+    }
+
+    public void RoomJoin(String roomkey)
+    {
+        MainData data = new MainData(DataType.ROOM_JOIN, name, roomkey);
+        this.sendMSG(data);
+    }
+
     @Override
     public void MsgSend (String msg)
     {
@@ -123,7 +202,7 @@ public class MainServer implements SInterface {
         }
         else
         {
-            controller.lobby_input_text("[HIBA] Elnézést kérjük! A szerver nem elérhető!");
+            lobbycontroller.lobby_input_text("[HIBA] Elnézést kérjük! A szerver nem elérhető!");
         }
 
     }

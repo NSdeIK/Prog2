@@ -1,59 +1,129 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <TextField fx:id="username_input" alignment="CENTER" layoutX="312.0" layoutY="359.0" prefHeight="50.0" prefWidth="400.0" promptText="Játékos neved">
-         <font>
-            <Font size="30.0" />
-         </font>
-      </TextField>
-      <Text layoutX="422.0" layoutY="338.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Játékos neved">
-         <font>
-            <Font size="29.0" />
-         </font>
-      </Text>
-      <HBox fx:id="server_on" layoutX="824.0" layoutY="8.0" prefHeight="100.0" prefWidth="200.0" visible="false">
+      <VBox fx:id="login_vbox" alignment="CENTER" prefHeight="667.0" prefWidth="1024.0" spacing="10.0">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Szerver">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Felhasználónév" textAlignment="CENTER" wrappingWidth="524.0">
+               <font>
+                  <Font size="29.0" />
+               </font>
+            </Text>
+            <TextField fx:id="login_user_input" alignment="CENTER" prefHeight="50.0" prefWidth="400.0" promptText="Felhasználóneved">
                <font>
                   <Font size="30.0" />
                </font>
+            </TextField>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Jelszó" textAlignment="CENTER" wrappingWidth="523.0">
+               <font>
+                  <Font size="29.0" />
+               </font>
             </Text>
-            <ImageView fitHeight="30.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../../green_circle.png" />
-               </image>
-               <HBox.margin>
-                  <Insets left="5.0" top="7.0" />
-               </HBox.margin>
-            </ImageView>
-         </children>
-      </HBox>
-      <HBox fx:id="server_off" layoutX="824.0" layoutY="8.0" prefHeight="110.0" prefWidth="200.0" visible="false">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Szerver">
+            <PasswordField fx:id="login_password_input" alignment="CENTER" prefHeight="61.0" prefWidth="524.0" promptText="Jelszavad">
                <font>
                   <Font size="30.0" />
                </font>
-            </Text>
-            <ImageView fitHeight="30.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../../red_circle.png" />
-               </image>
-               <HBox.margin>
-                  <Insets left="5.0" top="7.0" />
-               </HBox.margin>
-            </ImageView>
+            </PasswordField>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
+               <children>
+                  <Button fx:id="userlogin" mnemonicParsing="false" text="Bejelentkezés" textAlignment="CENTER">
+                     <font>
+                        <Font size="35.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
+            <VBox alignment="CENTER" prefHeight="80.0" prefWidth="524.0">
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="35.0" prefWidth="200.0" text="Nincs fiókod?" textAlignment="CENTER">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="jumpregister" mnemonicParsing="false" prefWidth="253.0" text="Regisztráció">
+                     <font>
+                        <Font size="30.0" />
+                     </font>
+                  </Button>
+               </children>
+               <VBox.margin>
+                  <Insets top="100.0" />
+               </VBox.margin>
+            </VBox>
          </children>
-      </HBox>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <padding>
+            <Insets left="250.0" right="250.0" />
+         </padding>
+      </VBox>
+      <VBox fx:id="register_vbox" alignment="CENTER" layoutX="-6.0" layoutY="-9.0" prefHeight="685.0" prefWidth="1035.0" spacing="10.0" visible="false">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Felhasználónév" textAlignment="CENTER" wrappingWidth="524.0">
+               <font>
+                  <Font size="29.0" />
+               </font>
+            </Text>
+            <TextField fx:id="reg_user_input" alignment="CENTER" prefHeight="50.0" prefWidth="400.0" promptText="Felhasználóneved">
+               <font>
+                  <Font size="30.0" />
+               </font>
+            </TextField>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Jelszó" textAlignment="CENTER" wrappingWidth="523.0">
+               <font>
+                  <Font size="29.0" />
+               </font>
+            </Text>
+            <PasswordField fx:id="reg_password_input" alignment="CENTER" prefHeight="61.0" prefWidth="524.0" promptText="Jelszavad">
+               <font>
+                  <Font size="30.0" />
+               </font>
+            </PasswordField>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
+               <children>
+                  <Button fx:id="userregister" mnemonicParsing="false" text="Fiók létrehozása" textAlignment="CENTER">
+                     <font>
+                        <Font size="35.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
+            <VBox alignment="CENTER" prefHeight="80.0" prefWidth="524.0">
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="35.0" prefWidth="200.0" text="Van fiókod?" textAlignment="CENTER">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="jumplogin" mnemonicParsing="false" prefWidth="253.0" text="Bejelentkezés">
+                     <font>
+                        <Font size="30.0" />
+                     </font>
+                  </Button>
+               </children>
+               <VBox.margin>
+                  <Insets top="100.0" />
+               </VBox.margin>
+            </VBox>
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <padding>
+            <Insets left="250.0" right="250.0" />
+         </padding>
+      </VBox>
    </children>
 </AnchorPane>

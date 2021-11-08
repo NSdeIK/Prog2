@@ -134,7 +134,6 @@ public class GameRoomServer implements GRSInterface {
                         {
                             case CONNECT:
                             {
-                                //System.out.println("Előtte: "+players.size());
                                 Data msgreply = new Data();
                                 User p = new User(incomingmsg.getName(), this.socket.getInetAddress());
                                 players.add(p);
@@ -262,12 +261,14 @@ public class GameRoomServer implements GRSInterface {
 
     public void gameboardready(char[][] matrix)
     {
+        System.out.println("[1]: " + matrix);
         Data data = new Data(DataType.START_GAME, name, matrix);
         broadcastmsg(data);
     }
 
     public void gameboardgui(ArrayList<String> players)
     {
+        System.out.println("Players: " + players);
         Data data = new Data(DataType.GAMEBOARD_GUI, name, players);
         broadcastmsg(data);
     }
@@ -276,6 +277,7 @@ public class GameRoomServer implements GRSInterface {
     {
         for(int i=1; i < this.players.size(); i++)
         {
+            System.out.println(players.get(i).getname());
             if(!data.getName().equals(this.players.get(i).getname()))
             {
                 try
@@ -284,7 +286,7 @@ public class GameRoomServer implements GRSInterface {
                 }
                 catch(IOException IOE)
                 {
-                    ;
+                    IOE.getMessage();
                 }
             }
         }
