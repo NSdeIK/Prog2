@@ -11,12 +11,12 @@
 	 Pontokat lehet kiváltani valamiféle fejlesztéseken (<- Ideiglenes terv) .*  
  
  2. ## Jelenlegi verzió
-	Kliens - v0.03
-	Szerver - v0.01
+	Kliens - v0.8
+	Szerver - v0.4
  3. ## Használata [Telepítési tutorial]
 	- Szükségünk lesz hozzá **IntelliJ IDEA**-ra
 	- Java verzió: **16-17**
-	- Library: **openjfx**
+	- Library: **openjfx**, **SQLite **, **SCrypt**
 	- IntelliJ IDEA --> [ **File --> Settings --> Plugins --> JavaFX Runtime for plugins** ]
 	-    --> ***Projekt névre jobb click --> Open Module Settings --> Libraries --> Plus --> openjfx-sdk [összes .jar*]***
 	- IP címek konfigurálása -> Kliens IP cím, Szerver IP cím
@@ -28,8 +28,8 @@
 
 	 - Kliens
 		 - Játék
-			 - Szókincsfejlesztő  **0%**
-				 - Magyar - SQL **0%**
+			 - Szókincsfejlesztő  **40%**
+				 - Magyar - SQL **80%**
 				 - Angol - SQL **0%**
 			- Memóriafejlesztő [csak 2 játékos --> Ideiglenes terv] **0%**
 		 - Beállítások
@@ -40,7 +40,7 @@
 			 - Felh./Jelszó rendszer **50%**
 				 - Létezik-e? Ellenőrzések **0%**
 				 - XP rendszer **0%**
-				 - Pont rendszer **0%**
+				 - Pont rendszer **10%**
 		 - Szoba + Chat
 			 - Létrehozás **50%**
 				 - Szobakód generálása **100%**
@@ -51,7 +51,7 @@
 			 - Csatlakozás
 				 - Szobakód keresgélése --> Melyik IP címen van? **100%**
 				 - Chat **85%**
-				 - Készenállás/Ready funkció  **0%**
+				 - Készenállás/Ready funkció  **100%**
 		 - Lobby
 			 - Chat **85%**
 			 - Profil megtekintése **0%**
