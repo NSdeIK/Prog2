@@ -3,11 +3,6 @@ module com.ns_deik.ns_client {
     requires javafx.fxml;
     requires javafx.web;
 
-    requires org.controlsfx.controls;
-    requires com.dlsc.formsfx;
-    requires validatorfx;
-    requires org.kordamp.bootstrapfx.core;
-    requires eu.hansolo.tilesfx;
     requires javafx.graphics;
     requires scrypt;
 

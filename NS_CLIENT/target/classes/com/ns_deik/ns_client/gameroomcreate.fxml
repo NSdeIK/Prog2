@@ -60,7 +60,7 @@
                         <ToggleGroup fx:id="game_language" />
                      </toggleGroup>
                   </RadioButton>
-                  <RadioButton mnemonicParsing="false" text="English" textFill="WHITE" toggleGroup="$game_language">
+                  <RadioButton disable="true" mnemonicParsing="false" text="English" textFill="WHITE" toggleGroup="$game_language">
                      <font>
                         <Font name="Script MT Bold" size="14.0" />
                      </font>
@@ -100,7 +100,7 @@
                         <ToggleGroup fx:id="game_speed" />
                      </toggleGroup>
                   </RadioButton>
-                  <RadioButton mnemonicParsing="false" text="Gyors" textFill="WHITE" toggleGroup="$game_speed">
+                  <RadioButton disable="true" mnemonicParsing="false" text="Gyors" textFill="WHITE" toggleGroup="$game_speed">
                      <font>
                         <Font name="Script MT Bold" size="14.0" />
                      </font>

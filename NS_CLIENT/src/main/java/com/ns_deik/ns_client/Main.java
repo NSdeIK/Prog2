@@ -10,18 +10,32 @@ import java.io.IOException;
 
 public class Main extends Application {
 
-    private Scene HomePageScene;
+    private Scene HomePageScene; //Storing scene
 
     @Override
     public void start(Stage stage) throws IOException {
 
+        //FXML load file
         FXMLLoader HomepageFXML = new FXMLLoader(Main.class.getResource("homepage_fxml.fxml"));
+
+        //Set HomePageScene variable
         HomePageScene = new Scene(HomepageFXML.load(), 300,480);
-        stage.getIcons().add(new Image("icon_new.png"));
-        stage.setTitle("[NS_DEIK] - Kezdőlap");
-        stage.setScene(HomePageScene);
-        stage.setResizable(false);
-        stage.show();
+
+        //Stage
+            //icon
+            stage.getIcons().add(new Image("icon_new.png"));
+
+            //title
+            stage.setTitle("[NS_DEIK] - Kezdőlap");
+
+            //set scene
+            stage.setScene(HomePageScene);
+
+            //resizeable? [true | false => false]
+            stage.setResizable(false);
+
+            //show scene
+            stage.show();
     }
 
 

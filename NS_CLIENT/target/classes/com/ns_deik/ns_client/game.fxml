@@ -5,17 +5,33 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-image: url('game_background.jpg'); -fx-background-size: cover; -fx-background-position: center;" stylesheets="@../../../button.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <children>
+      <VBox fx:id="reconnecting" alignment="CENTER" layoutX="349.0" layoutY="234.0" prefHeight="200.0" prefWidth="100.0" visible="false">
+         <children>
+            <ImageView fitHeight="229.0" fitWidth="141.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../hourglass.gif" />
+               </image>
+            </ImageView>
+            <Text fill="WHITE" stroke="BLACK" strokeType="OUTSIDE" text="Újracsatlakozás..." textAlignment="CENTER">
+               <font>
+                  <Font size="44.0" />
+               </font>
+            </Text>
+         </children>
+      </VBox>
       <VBox fx:id="login_vbox" alignment="CENTER" prefHeight="667.0" prefWidth="1024.0" spacing="10.0">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Felhasználónév" textAlignment="CENTER" wrappingWidth="524.0">
+            <Text id="text" fill="WHITE" stroke="BLACK" strokeType="OUTSIDE" text="Felhasználónév" textAlignment="CENTER" wrappingWidth="524.0">
                <font>
                   <Font size="29.0" />
                </font>
@@ -25,7 +41,7 @@
                   <Font size="30.0" />
                </font>
             </TextField>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Jelszó" textAlignment="CENTER" wrappingWidth="523.0">
+            <Text id="text" fill="WHITE" stroke="BLACK" strokeType="OUTSIDE" styleClass="text" text="Jelszó" textAlignment="CENTER" wrappingWidth="523.0">
                <font>
                   <Font size="29.0" />
                </font>
@@ -44,6 +60,11 @@
                   </Button>
                </children>
             </HBox>
+            <Text fx:id="error_login" fill="#ff0900" stroke="#c90000" strokeLineCap="ROUND" style="-fx-background-color: white;" textAlignment="CENTER" wrappingWidth="472.13671875">
+               <font>
+                  <Font size="26.0" />
+               </font>
+            </Text>
             <VBox alignment="CENTER" prefHeight="80.0" prefWidth="524.0">
                <children>
                   <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="35.0" prefWidth="200.0" text="Nincs fiókod?" textAlignment="CENTER">
@@ -55,6 +76,9 @@
                      <font>
                         <Font size="30.0" />
                      </font>
+                     <VBox.margin>
+                        <Insets top="30.0" />
+                     </VBox.margin>
                   </Button>
                </children>
                <VBox.margin>
@@ -71,7 +95,7 @@
       </VBox>
       <VBox fx:id="register_vbox" alignment="CENTER" layoutX="-6.0" layoutY="-9.0" prefHeight="685.0" prefWidth="1035.0" spacing="10.0" visible="false">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Felhasználónév" textAlignment="CENTER" wrappingWidth="524.0">
+            <Text id="text" fill="WHITE" stroke="BLACK" strokeType="OUTSIDE" text="Felhasználónév" textAlignment="CENTER" wrappingWidth="524.0">
                <font>
                   <Font size="29.0" />
                </font>
@@ -81,7 +105,7 @@
                   <Font size="30.0" />
                </font>
             </TextField>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Jelszó" textAlignment="CENTER" wrappingWidth="523.0">
+            <Text id="text" fill="WHITE" stroke="BLACK" strokeType="OUTSIDE" text="Jelszó" textAlignment="CENTER" wrappingWidth="523.0">
                <font>
                   <Font size="29.0" />
                </font>
@@ -111,6 +135,9 @@
                      <font>
                         <Font size="30.0" />
                      </font>
+                     <VBox.margin>
+                        <Insets top="30.0" />
+                     </VBox.margin>
                   </Button>
                </children>
                <VBox.margin>

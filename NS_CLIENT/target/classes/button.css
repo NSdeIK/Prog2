@@ -1,0 +1,16 @@
+.button {
+-fx-background-color: transparent;
+-fx-text-fill: white;
+-fx-effect: dropshadow( gaussian , black , 1 , 1 , 1 , 1 );
+  }
+  .button:hover {
+     -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+     -fx-text-fill: -fx-text-base-color;
+  }
+
+.label
+{
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-text-fill: -fx-text-base-color;
+    -fx-background-radius: 50px;
+}

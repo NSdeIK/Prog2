@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
@@ -79,10 +80,10 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <ListView fx:id="ListViewPlayersC" maxWidth="224.0" prefHeight="299.0" prefWidth="224.0" style="-fx-background-color: none;" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                  <TextArea fx:id="room_chat" editable="false" maxHeight="600.0" maxWidth="300.0" opacity="0.66" prefHeight="100.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                  <ListView fx:id="ListViewPlayers" maxWidth="224.0" prefHeight="299.0" prefWidth="224.0" style="-fx-background-color: none;" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                  <TextArea fx:id="room_chat" editable="false" maxHeight="600.0" maxWidth="300.0" opacity="0.82" prefHeight="100.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                      <font>
-                        <Font name="Script MT Bold" size="20.0" />
+                        <Font name="Arial" size="20.0" />
                      </font>
                   </TextArea>
                   <TextField fx:id="room_chat_input" alignment="CENTER" maxHeight="10.0" maxWidth="300.0" opacity="0.86" prefHeight="25.0" prefWidth="312.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP">
@@ -90,6 +91,17 @@
                         <Font name="Script MT Bold" size="16.0" />
                      </font>
                   </TextField>
+                  <Button fx:id="ready_button" alignment="BASELINE_CENTER" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" prefHeight="78.0" prefWidth="400.0" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                     <font>
+                        <Font size="37.0" />
+                     </font>
+                     <padding>
+                        <Insets top="10.0" />
+                     </padding>
+                     <GridPane.margin>
+                        <Insets top="50.0" />
+                     </GridPane.margin>
+                  </Button>
                </children>
             </GridPane>
          </children>

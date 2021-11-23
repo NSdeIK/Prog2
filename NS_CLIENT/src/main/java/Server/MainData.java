@@ -5,81 +5,109 @@ import java.net.InetAddress;
 
 public class MainData implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private DataType dataType;
-    private String name;
-    private String room;
-    private String content;
-    private InetAddress ip;
+    //Variables
+        //Strings
+        private String name;
+        private String room;
+        private String content;
+        private String character;
 
+        //Integer
+        private int num;
 
-    public MainData()
+        //Networks & Packets
+        private static final long serialVersionUID = 1L;
+        private DataType dataType;
+        private InetAddress ip;
+
+    //Constructors
+
+        //Default - Empty
+        public MainData() {
+        }
+
+        // [String] => [DataType]
+        public MainData(String type, String name, String content)
+        {
+            this.dataType = DataType.valueOf(type);
+            this.name = name;
+            this.content = content;
+        }
+
+        // Normal packet [type | name | content]
+        public MainData(DataType type, String name, String content)
+        {
+            this.dataType = type;
+            this.name = name;
+            this.content = content;
+        }
+
+        // Word checking network packet [ type | name | content | word_num_type | char ]
+        public MainData(DataType type, String name, String content, int num, String character)
+        {
+            this.dataType = type;
+            this.name = name;
+            this.content = content;
+            this.num = num;
+            this.character = character;
+        }
+
+    //Get methods
+        //Strings
+        public String getName()
+        {
+            return name;
+        }
+        public String getRoom()
+        {
+            return room;
+        }
+        public String getContent()
+        {
+            return content;
+        }
+        public String getString() { return character; }
+
+        //Integer
+        public int getNum() { return num; }
+
+        //Networks
+        public DataType getDataType()
+        {
+            return dataType;
+        }
+        public InetAddress getIP()
+        {
+            return ip;
+        }
+
+    //Set methods
+        //Strings
+        public void setName(String name)
     {
-    }
-
-    public MainData(String type, String name, String content)
-    {
-        this.dataType = DataType.valueOf(type);
         this.name = name;
-        this.content = content;
     }
-
-    public MainData(DataType type, String name, String content)
-    {
-        this.dataType = type;
-        this.name = name;
-        this.content = content;
-    }
-
-    public DataType getDataType()
-    {
-        return dataType;
-    }
-
-    public void setDataType(DataType type)
-    {
-        this.dataType = type;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    public String getRoom()
-    {
-        return room;
-    }
-
-    public void setRoom(String content)
+        public void setRoom(String content)
     {
         this.room = room;
     }
-
-    public String getContent()
-    {
-        return content;
-    }
-
-    public void SetContent(String content)
+        public void SetContent(String content)
     {
         this.content = content;
     }
+        public void setString(String character) { this.character = character; }
 
-    public InetAddress getIP()
-    {
-        return ip;
-    }
+        //Integer
+        public void setNum(int num) { this.num = num; }
 
-    public void setIP(InetAddress ip)
+        //Networks
+        public void setDataType(DataType type)
+        {
+            this.dataType = type;
+        }
+        public void setIP(InetAddress ip)
     {
         this.ip = ip;
     }
-
 
 }

@@ -1,6 +1,5 @@
 package com.ns_deik.ns_client.homepage;
 
-import com.lambdaworks.crypto.SCryptUtil;
 import com.ns_deik.ns_client.lobby.GameLobbyController;
 import com.ns_deik.ns_client.Main;
 import com.ns_deik.ns_client.mainServer.MainServer;
@@ -10,19 +9,14 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.w3c.dom.Text;
 
 import java.io.*;
 import java.net.*;
@@ -33,10 +27,12 @@ import java.util.ResourceBundle;
 public class GameController implements Initializable
 {
 
+    //Constructor
     GameController(Stage stage)
     {
         this.stage = stage;
     }
+
     //Thread
     private Thread th;
 
@@ -55,98 +51,65 @@ public class GameController implements Initializable
     private String name;
 
     //FXML
-    @FXML
-    VBox login_vbox;
-    @FXML
-    VBox register_vbox;
-
-    @FXML
-    Button jumplogin;
-
-    @FXML
-    Button userlogin;
-
-
-
-    @FXML
-    Button jumpregister;
-    @FXML
-    Button userregister;
-    @FXML
-    TextField reg_user_input;
-    @FXML
-    PasswordField reg_password_input;
-    @FXML
-    TextField login_user_input;
-    @FXML
-    PasswordField login_password_input;
-
-    @FXML
-    TextField username_input;
-
-
+    @FXML VBox login_vbox;
+    @FXML VBox register_vbox;
+    @FXML VBox reconnecting;
+    @FXML Button jumplogin;
+    @FXML Button userlogin;
+    @FXML Button jumpregister;
+    @FXML Button userregister;
+    @FXML TextField reg_user_input;
+    @FXML PasswordField reg_password_input;
+    @FXML TextField login_user_input;
+    @FXML PasswordField login_password_input;
+    @FXML Text error_login;
 
     public void initialize(URL url, ResourceBundle rs)
     {
+        //Connect server
         client = new MainServer(this,name);
-        /*username_input.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                if(keyEvent.getCode().equals(KeyCode.ENTER))
-                {
-                    try
-                    {
-                        name = username_input.getText();
-                        System.out.println(name);
-                        Stage stage = (Stage)((Node)keyEvent.getSource()).getScene().getWindow();
-                        FXMLLoader GameLobbyFXML = new FXMLLoader(Main.class.getResource("gamelobby.fxml"));
-                        //GameLobbyController gamelobby = new GameLobbyController(width,height,stage,conn_to_srv,name);
-                        GameLobbyController gamelobby = new GameLobbyController(name,stage);
-                        GameLobbyFXML.setController(gamelobby);
-                        //scene = new Scene(GameLobbyFXML.load(),width,height);
-                        scene = new Scene(GameLobbyFXML.load(),1024,768);
 
-                        stage.setScene(scene);
-                        stage.setTitle("[NS-DEIK] Játék - Lobby");
-                        stage.show();
-                    }
-                    catch(IOException IO)
-                    {
-                        IO.printStackTrace();
-                    }
-                }
-            }
-        });*/
+        //Style
 
+        //User create
         userregister.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                    //Set name value
                     name = reg_user_input.getText();
+
+                    //Set password value
                     String password = reg_password_input.getText();
+
+                    //Check two value is empty?
                     if(name.isEmpty() || password.isEmpty())
                     {
                         System.out.println("Warning... user/password missing?");
-
+                        // TODO - gui warning
                     }
                     else
                     {
                         client.RegisterMSG(name, password);
-                        System.out.println(name + "-" + password);
                     }
 
 
             }
         });
 
+        //User login
         userlogin.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                //Set name
                 name = login_user_input.getText();
+
+                //Set password
                 String password = login_password_input.getText();
+
+                //Check two value is empty?
                 if(name.isEmpty() || password.isEmpty())
                 {
-                    System.out.println("Warning... user/password missing?");
-
+                    error_login.setText("Rossz felhasználónév, vagy jelszó...");
                 }
                 else
                 {
@@ -155,6 +118,7 @@ public class GameController implements Initializable
             }
         });
 
+        //Jump to register/login panel
         jumpregister.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -168,7 +132,11 @@ public class GameController implements Initializable
                jumpLoginPanel();
             }
         });
+
     }
+
+
+    //Jump to login/register/lobby panel
 
     public void jumpLoginPanel()
     {
@@ -199,26 +167,52 @@ public class GameController implements Initializable
             public void run() {
                 try
                 {
+                    //Set name
                     name = login_user_input.getText();
+
+                    //Server change "" to original name
                     client.setName(name);
-                    //Stage stage = (Stage)((Node)jumplogin.getSource()).getScene().getWindow();
+
+                    //FXML
                     FXMLLoader GameLobbyFXML = new FXMLLoader(Main.class.getResource("gamelobby.fxml"));
-                    //GameLobbyController gamelobby = new GameLobbyController(width,height,stage,conn_to_srv,name);
+
+                    //Controller
                     GameLobbyController gamelobby = new GameLobbyController(name,stage, client);
                     GameLobbyFXML.setController(gamelobby);
-                    //scene = new Scene(GameLobbyFXML.load(),width,height);
-                    scene = new Scene(GameLobbyFXML.load(),1024,768);
 
+                    //Settings...
+                    scene = new Scene(GameLobbyFXML.load(),1024,768);
                     stage.setScene(scene);
                     stage.setTitle("[NS-DEIK] Játék - Lobby");
                     stage.show();
+
                 }catch (IOException e)
                 {
-                    ;
+
+
                 }
             }
         });
 
+    }
+
+    //If server is down
+    public void reconnect() {
+        login_vbox.setVisible(false);
+        reconnecting.setVisible(true);
+        client.reconnect();
+    }
+
+    public void reconnect_success()
+    {
+        login_vbox.setVisible(true);
+        reconnecting.setVisible(false);
+    }
+
+    //Bad login
+    public void bad_login(String error)
+    {
+        error_login.setText(error);
     }
 }
 
