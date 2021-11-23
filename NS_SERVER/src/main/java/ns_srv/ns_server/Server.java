@@ -1,7 +1,7 @@
 package ns_srv.ns_server;
 
 import Server.*;
-import com.lambdaworks.crypto.SCrypt;
+
 import com.lambdaworks.crypto.SCryptUtil;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -32,7 +32,7 @@ public class Server extends Application implements ServerInterface {
 
     private ServerListen serverListen;
 
-    private Database db;
+    private Database db = new Database(this);
 
     private User p;
 
@@ -60,14 +60,12 @@ public class Server extends Application implements ServerInterface {
         stage.setResizable(false);
         stage.show();
 
-        //If database missing (Recovery - Manual)
-            //Database create
-            db = new Database();
-            //db.CreateDatabase("demo.db");
 
-            //Database connection test
-            db.DBConnect();
-            //db.check();
+        //If database missing (Recovery - Manual)
+        //db.CreateDatabase("demo.db");
+
+        //Database connection test
+        db.DBConnect();
     }
 
     @FXML
@@ -186,7 +184,6 @@ public class Server extends Application implements ServerInterface {
                             }
                             case LOBBY_CHAT:
                             {
-                                System.out.println(incomingmsg.getName() + ": " + incomingmsg.getContent());
                                 broadcastmsg(incomingmsg);
                                 break;
                             }
@@ -214,7 +211,6 @@ public class Server extends Application implements ServerInterface {
                             }
                             case REGISTER_USER:
                             {
-                                db = new Database();
                                 db.createUser(incomingmsg.getName(),SCryptUtil.scrypt(incomingmsg.getContent(),16,16,16));
                                 MainData msgreply = new MainData();
                                 if(db.getstatus() == true)
@@ -227,34 +223,34 @@ public class Server extends Application implements ServerInterface {
                                     msgreply.setDataType(DataType.REGISTER_USER_FAIL);
                                     this.oout.writeObject(msgreply);
                                 }
-                                db = null;
                                 break;
                             }
                             case LOGIN_USER:
                             {
-                                db = new Database();
                                 db.loginUser(incomingmsg.getName(),incomingmsg.getContent());
                                 MainData msgreply = new MainData();
-                                if(db.getstatus() == true)
+                                if(db.getstatus())
                                 {
-                                    msgreply.setDataType(DataType.LOGIN_USER_SUCCESS);
-                                    p = new User(incomingmsg.getName(),this.socket.getInetAddress());
-                                    players.add(p);
-                                    Platform.runLater(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            clients_size.setText(String.valueOf(players.size()));
-                                        }
-                                    });
-                                    this.oout.writeObject(msgreply);
+                                        msgreply.setDataType(DataType.LOGIN_USER_SUCCESS);
+                                        p = new User(incomingmsg.getName(),this.socket.getInetAddress());
+                                        players.add(p);
+                                        Platform.runLater(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                clients_size.setText(String.valueOf(players.size()));
+                                            }
+                                        });
+                                        this.oout.writeObject(msgreply);
                                 }
                                 else
                                 {
                                     msgreply.setDataType(DataType.LOGIN_USER_FAIL);
+                                    msgreply.setContent("Error#1");
                                     this.oout.writeObject(msgreply);
                                 }
-                                db = null;
+
                                 break;
+
                             }
                             case ROOM_CREATE:
                             {
@@ -277,14 +273,23 @@ public class Server extends Application implements ServerInterface {
                                     if(roomcode.equals(roomcode2))
                                     {
                                         ip = players.get(i).getIP();
-                                        break;
+                                        MainData msgreply = new MainData();
+                                        msgreply.setDataType(DataType.ROOM_JOIN);
+                                        msgreply.setContent(ip);
+                                        this.oout.writeObject(msgreply);
+                                    }
+                                    else
+                                    {
+                                        //warning bad room code...
                                     }
                                 }
-                                MainData msgreply = new MainData();
-                                msgreply.setDataType(DataType.ROOM_JOIN);
-                                msgreply.setContent(ip);
-                                this.oout.writeObject(msgreply);
+
                                 break;
+                            }
+                            case WORD_CHECK:
+                            {
+                               db.WordCheck(incomingmsg.getName(),incomingmsg.getContent(),incomingmsg.getNum(), incomingmsg.getString());
+                               break;
                             }
 
                             case PING:
@@ -319,7 +324,6 @@ public class Server extends Application implements ServerInterface {
         {
             if(!data.getName().equals(this.players.get(i).getname()))
             {
-                System.out.println(i + ": " + this.players.get(i).getname());
                 try
                 {
                     this.writers.get(i).writeObject(data);
@@ -331,9 +335,36 @@ public class Server extends Application implements ServerInterface {
         }
     }
 
-    @FXML
-    protected void button_off() throws IOException
+
+    private void sendMSG(MainData data)
     {
+        for(int i=0; i < this.players.size();++i)
+        {
+            if(data.getName().equals(this.players.get(i).getname()))
+            {
+                try
+                {
+                    this.writers.get(i).writeObject(data);
+                }
+                catch(IOException IOE)
+                {
+                    ;
+                }
+            }
+        }
+    }
+
+    public void WordSuccess(String name, String word)
+    {
+        System.out.println("name: " + name + " word: " + word);
+        MainData msgreply = new MainData(DataType.WORD_SUCCESS, name, word);
+        this.sendMSG(msgreply);
+    }
+
+
+
+    @FXML
+    protected void button_off() throws IOException {
         if(this.serverListen!= null)
         {
             serverListen.Close();

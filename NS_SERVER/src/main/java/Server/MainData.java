@@ -10,6 +10,8 @@ public class MainData implements Serializable
     private String name;
     private String room;
     private String content;
+    private int num;
+    private String character;
     private InetAddress ip;
 
 
@@ -30,6 +32,16 @@ public class MainData implements Serializable
         this.name = name;
         this.content = content;
     }
+
+    public MainData(DataType type, String name, String content, int num, String character)
+    {
+        this.dataType = type;
+        this.name = name;
+        this.content = content;
+        this.num = num;
+        this.character = character;
+    }
+
 
     public DataType getDataType()
     {
@@ -81,5 +93,11 @@ public class MainData implements Serializable
         this.ip = ip;
     }
 
+    public int getNum() { return num; }
 
+    public void setNum(int num) { this.num = num; }
+
+    public String getString() { return character; }
+
+    public void setString(String character) { this.character = character; }
 }
