@@ -16,7 +16,7 @@
  3. ## Használata [Telepítési tutorial]
 	- Szükségünk lesz hozzá **IntelliJ IDEA**-ra
 	- Java verzió: **16-17**
-	- Library: **openjfx**, **SQLite **, **SCrypt**
+	- Library: **openjfx**, **SQLite ** , **SCrypt**
 	- IntelliJ IDEA --> [ **File --> Settings --> Plugins --> JavaFX Runtime for plugins** ]
 	-    --> ***Projekt névre jobb click --> Open Module Settings --> Libraries --> Plus --> openjfx-sdk [összes .jar*]***
 	- IP címek konfigurálása -> Kliens IP cím, Szerver IP cím
